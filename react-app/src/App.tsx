@@ -249,17 +249,9 @@ function App() {
                 style={{ width: '100vw', height: '100vh' }}
                 mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
             >
-                <Source id="park-source" type="geojson" data={parkGeoJSON}>
-                    <Layer {...parkFillLayer} />
-                    <Layer {...parkOutlineLayer} />
-                </Source>
 
-                <Marker
-                    longitude={60.6825}
-                    latitude={56.841}
-                    color="#FF5722"
-                    anchor="bottom"
-                />
+
+
 
                 {showPopup && (
                     <Popup
