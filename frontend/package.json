@@ -15,9 +15,9 @@
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-map-gl": "^8.0.4",
-    "react-scripts": "5.0.1",
-    "typescript": "^5.9.3",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "ajv": "^8.11.0",
+    "ajv-keywords": "^5.1.0"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -42,5 +42,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "react-scripts": "^5.0.1",
+    "typescript": "^4.9.5"
   }
 }

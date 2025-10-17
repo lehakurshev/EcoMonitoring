@@ -1,9 +1,37 @@
 import React, { useState, useCallback } from 'react';
 import Map, { Source, Layer, Marker, Popup, ViewState, MapEvent } from 'react-map-gl/maplibre';
+
 import 'maplibre-gl/dist/maplibre-gl.css';
 import './App.css';
 
 // Типы для координат
+const settingsHeatMap = {
+    // Настройки тепловой карты
+    'heatmap-weight': [
+        'interpolate', ['linear'],
+        ['get', 'intensity'], 0, 0, 1, 1
+    ] as any,
+    'heatmap-intensity': [
+        'interpolate', ['linear'],
+        ['zoom'], 0, 1, 9, 3
+    ] as any,
+    'heatmap-color': [
+        'interpolate', ['linear'],
+        ['heatmap-density'],
+        0, 'rgba(0, 0, 255, 0)',
+        0.2, 'royalblue',
+        0.4, 'cyan',
+        0.6, 'lime',
+        0.8, 'yellow',
+        1, 'red'
+    ] as any,
+    'heatmap-radius': [
+        'interpolate', ['linear'],
+        ['zoom'], 0, 20, 9, 200
+    ] as any,
+    'heatmap-opacity': 0.8
+}
+
 type Coordinates = [number, number];
 type Bounds = {
     sw: Coordinates;
@@ -23,6 +51,42 @@ type GeoJSONFeature = {
         name: string;
     };
 };
+
+type PointOnHeatMap = {
+    type: 'Feature',
+    geometry: {
+        type: 'Point',
+        coordinates: [number, number]
+    },
+    properties: { intensity: number }
+}
+
+type HeatMapData = {
+    type: 'FeatureCollection',
+    features: PointOnHeatMap[]
+};
+
+const getPointOnHeatMap = (lng : number, lat : number, intensity : number) : PointOnHeatMap => {
+    return {
+        type: 'Feature',
+        geometry: {
+            type: 'Point',
+            coordinates: [lng, lat]
+        },
+        properties: { intensity }
+    }
+}
+
+const getHeatMap = () : HeatMapData => {
+    const greenPoint = getPointOnHeatMap(60.6820, 56.835, 0.1);
+    const redPoint = getPointOnHeatMap(60.684, 56.85, 0.9);
+    const yellowPoint = getPointOnHeatMap(60.683, 56.843, 0.5);
+
+    return {
+        type: 'FeatureCollection',
+        features: [greenPoint, redPoint, yellowPoint]
+    }
+}
 
 // Типы для слоев
 type ParkFillLayer = {
@@ -197,6 +261,13 @@ function App() {
         }
     };
 
+    const heatMap = {
+        id : "heatmap-layer",
+        type : "heatmap" as const,
+        source : "heatmap-data",
+        paint : settingsHeatMap
+    };
+
     return (
         <div className="App">
             {/* Кнопка для ручного вывода координат в консоль */}
@@ -251,6 +322,10 @@ function App() {
                 <Source id="park-source" type="geojson" data={parkGeoJSON}>
                     <Layer {...parkFillLayer} />
                     <Layer {...parkOutlineLayer} />
+                </Source>
+
+                <Source id="heatmap-data" type="geojson" data={getHeatMap()}>
+                    <Layer {...heatMap} />
                 </Source>
 
                 <Marker
