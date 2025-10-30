@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EcoMonitoringBack.WebApi", "EcoMonitoringBack.WebApi\EcoMonitoringBack.WebApi.csproj", "{6058D997-8645-4A4D-A289-858896C07506}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp1", "ConsoleApp1\ConsoleApp1.csproj", "{329772F7-8928-482A-808A-DFEF7F9EE42F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6058D997-8645-4A4D-A289-858896C07506}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6058D997-8645-4A4D-A289-858896C07506}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6058D997-8645-4A4D-A289-858896C07506}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6058D997-8645-4A4D-A289-858896C07506}.Release|Any CPU.Build.0 = Release|Any CPU
+		{329772F7-8928-482A-808A-DFEF7F9EE42F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{329772F7-8928-482A-808A-DFEF7F9EE42F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{329772F7-8928-482A-808A-DFEF7F9EE42F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{329772F7-8928-482A-808A-DFEF7F9EE42F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
