@@ -1,6 +1,77 @@
 @EcoMonitoringBack_HostAddress = http://localhost:5101
 
-GET {{EcoMonitoringBack_HostAddress}}/weatherforecast/
+GET {{EcoMonitoringBack_HostAddress}}/containers
 Accept: application/json
 
 ###
+GET {{EcoMonitoringBack_HostAddress}}/containers/area?topLeftLat=56.914393&topLeftLng=60.49293&bottomRightLat=56.776507&bottomRightLng=60.703773
+Accept: application/json
+
+###
+
+POST {{EcoMonitoringBack_HostAddress}}/analyze-polygon
+Content-Type: application/json
+
+{
+  "coordinates": [
+    { "longitude": 37.6174943, "latitude": 55.7558261 },
+    { "longitude": 37.6184943, "latitude": 55.7558261 },
+    { "longitude": 37.6184943, "latitude": 55.7568261 },
+    { "longitude": 37.6174943, "latitude": 55.7568261 },
+    { "longitude": 37.6174943, "latitude": 55.7558261 }
+  ],
+  "properties": {}
+}
+###
+
+POST {{EcoMonitoringBack_HostAddress}}/analyze-polygons
+Content-Type: application/json
+
+[
+  {
+    "coordinates": [
+      { "longitude": 37.6174943, "latitude": 55.7550261 },
+      { "longitude": 37.6184943, "latitude": 55.7550261 },
+      { "longitude": 37.6184943, "latitude": 55.7568261 },
+      { "longitude": 37.6174943, "latitude": 55.7568261 },
+      { "longitude": 37.6174943, "latitude": 55.75508261 }
+    ],
+    "properties": {
+      "name": "Первый полигон"
+    }
+  },
+  {
+    "coordinates": [
+      { "longitude": 37.6194943, "latitude": 55.7578261 },
+      { "longitude": 37.6204943, "latitude": 55.7578261 },
+      { "longitude": 37.6204943, "latitude": 55.7588261 },
+      { "longitude": 37.6194943, "latitude": 55.7588261 },
+      { "longitude": 37.6194943, "latitude": 55.7578261 }
+    ],
+    "properties": {
+      "name": "Второй полигон"
+    }
+  }
+]
+
+
+###
+
+GET {{EcoMonitoringBack_HostAddress}}/containers/69146a1c2c5e69c997285813
+
+
+###
+
+PUT http://localhost:5101/containers/64d9a8e5a1b2c3d4e5f6a7b8
+Content-Type: application/json
+
+{
+  "id": "64d9a8e5a1b2c3d4e5f6a7b8",
+  "location": {
+    "latitude": 55.7558261,
+    "longitude": 37.6174943
+  },
+  "capacity": 120,
+  "status": "active",
+  "lastMaintenance": "2025-11-12T00:00:00Z"
+}
