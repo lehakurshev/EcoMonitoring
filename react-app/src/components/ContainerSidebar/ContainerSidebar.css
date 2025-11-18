@@ -1,0 +1,114 @@
+.container-sidebar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 350px;
+    background: white;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(-100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+.container-sidebar__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.container-sidebar__title {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+    text-align: left;
+}
+
+.container-sidebar__close {
+    background: none;
+    border: none;
+    font-size: 32px;
+    line-height: 1;
+    cursor: pointer;
+    color: #666;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.container-sidebar__close:hover {
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+.container-sidebar__content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.container-sidebar__section {
+    margin-bottom: 24px;
+}
+
+.container-sidebar__section:last-child {
+    margin-bottom: 0;
+}
+
+.container-sidebar__section-title {
+    margin: 0 0 12px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #555;
+    text-align: left;
+}
+
+.container-sidebar__address {
+    margin: 0;
+    line-height: 1.6;
+    color: #333;
+    font-size: 15px;
+    text-align: left;
+}
+
+.container-sidebar__waste-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.container-sidebar__waste-item {
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    background-color: #f5f5f5;
+    border-radius: 6px;
+    color: #333;
+    font-size: 14px;
+    transition: background-color 0.2s ease;
+}
+
+.container-sidebar__waste-item:hover {
+    background-color: #e8e8e8;
+}
+
+.container-sidebar__waste-item:last-child {
+    margin-bottom: 0;
+}

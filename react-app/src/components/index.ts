@@ -6,3 +6,4 @@ export { LoadingIndicator } from './LoadingIndicator/LoadingIndicator';
 export { MapView } from './MapView/MapView';
 export { ParkLayer } from './ParkLayer/ParkLayer';
 export { ClusterLayer } from './ClusterLayer/ClusterLayer';
+export { ContainerSidebar } from './ContainerSidebar/ContainerSidebar';

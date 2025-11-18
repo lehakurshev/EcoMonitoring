@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import type { ViewState, MapEvent } from 'react-map-gl/maplibre';
 import './App.css';
-import { MapView, MapControls, LoadingIndicator } from './components';
+import { MapView, LoadingIndicator } from './components';
 import { useMapBounds, useContainers } from './hooks';
+import type { ContainerInfo } from './types';
 
 function App() {
     const [viewState, setViewState] = useState<ViewState>({
@@ -19,7 +20,8 @@ function App() {
         }
     });
 
-    const { bounds, updateBounds, logBounds } = useMapBounds();
+    const [selectedContainer, setSelectedContainer] = useState<ContainerInfo | null>(null);
+    const { bounds, updateBounds } = useMapBounds();
     const { containers, loading } = useContainers(bounds);
 
     const handleMove = (evt: MapEvent) => {
@@ -31,22 +33,17 @@ function App() {
 
     return (
         <div className="App">
-            <MapControls
-                bounds={bounds}
-                viewState={viewState}
-                containersCount={containers.length}
-                onLogBounds={logBounds}
-            />
-
             {loading && <LoadingIndicator />}
 
             <MapView
                 viewState={viewState}
                 bounds={bounds}
                 containers={containers}
+                selectedContainer={selectedContainer}
                 onMove={handleMove}
                 onMoveEnd={updateBounds}
                 onViewStateChange={setViewState}
+                onContainerSelect={setSelectedContainer}
             />
         </div>
     );
