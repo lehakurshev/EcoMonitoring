@@ -1,0 +1,30 @@
+.container-popup {
+    max-width: 250px;
+}
+
+.container-popup__title {
+    margin: 0 0 10px 0;
+    font-size: 16px;
+}
+
+.container-popup__section {
+    margin-bottom: 10px;
+}
+
+.container-popup__section:last-child {
+    margin-bottom: 0;
+}
+
+.container-popup__address {
+    margin: 5px 0;
+    line-height: 1.4;
+}
+
+.container-popup__waste-list {
+    margin: 5px 0;
+    padding-left: 20px;
+}
+
+.container-popup__waste-list li {
+    margin: 3px 0;
+}

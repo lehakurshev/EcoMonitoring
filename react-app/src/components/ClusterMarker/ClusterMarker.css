@@ -1,0 +1,17 @@
+.cluster-marker {
+    border-radius: 50%;
+    background-color: #51bbd6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    border: 3px solid white;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.4);
+    transition: all 0.2s ease;
+}
+
+.cluster-marker:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}

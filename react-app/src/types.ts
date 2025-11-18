@@ -29,6 +29,13 @@ export interface ContainerInfo {
     address: Address;
 }
 
+export interface Bounds {
+    sw: [number, number];
+    ne: [number, number];
+    nw: [number, number];
+    se: [number, number];
+}
+
 export function getWasteTypeName(wasteType: WasteType): string {
     const names: Record<WasteType, string> = {
         [WasteType.Plastic]: 'Пластик',
