@@ -1,10 +1,12 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import Map, { Source, Layer, Marker, Popup} from 'react-map-gl/maplibre';
 import type { ViewState, MapEvent } from 'react-map-gl/maplibre';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import './App.css';
+import { getContainersInArea } from './api';
+import type { ContainerInfo } from './types';
+import { getContainerColor, getWasteTypeName } from './types';
 
-// Типы для координат
 type Coordinates = [number, number];
 type Bounds = {
     sw: Coordinates;
@@ -13,7 +15,6 @@ type Bounds = {
     se: Coordinates;
 };
 
-// Типы для GeoJSON
 type GeoJSONFeature = {
     type: 'Feature';
     geometry: {
@@ -25,7 +26,6 @@ type GeoJSONFeature = {
     };
 };
 
-// Типы для слоев
 type ParkFillLayer = {
     id: string;
     type: 'fill';
@@ -49,9 +49,9 @@ function App() {
         longitude: 60.6825,
         latitude: 56.841,
         zoom: 15,
-        bearing: 0,      // добавлено
-        pitch: 0,        // добавлено
-        padding: {       // добавлено
+        bearing: 0,
+        pitch: 0,
+        padding: {
             top: 0,
             bottom: 0,
             left: 0,
@@ -61,25 +61,25 @@ function App() {
 
     const [showPopup, setShowPopup] = useState<boolean>(true);
     const [bounds, setBounds] = useState<Bounds | null>(null);
+    const [containers, setContainers] = useState<ContainerInfo[]>([]);
+    const [selectedContainer, setSelectedContainer] = useState<ContainerInfo | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
 
-    // Функция для вычисления углов карты
     const handleMove = useCallback((evt: MapEvent) => {
-        // Проверяем, что viewState существует
         if ((evt as any).viewState) {
             setViewState((evt as any).viewState);
         }
 
-        // Получаем границы текущего вида карты
         const map = evt.target;
         if (map && (map as any).getBounds) {
             try {
                 const bounds = (map as any).getBounds();
 
                 // Получаем координаты углов
-                const sw = bounds.getSouthWest(); // юго-западный угол
-                const ne = bounds.getNorthEast(); // северо-восточный угол
-                const nw = bounds.getNorthWest(); // северо-западный угол
-                const se = bounds.getSouthEast(); // юго-восточный угол
+                const sw = bounds.getSouthWest();
+                const ne = bounds.getNorthEast();
+                const nw = bounds.getNorthWest();
+                const se = bounds.getSouthEast();
 
                 console.log('Границы карты:');
                 console.log('Юго-запад:', [sw.lng, sw.lat]);
@@ -90,7 +90,6 @@ function App() {
                 console.log('Зум:', viewState.zoom);
                 console.log('---');
 
-                // Сохраняем границы в состоянии, если нужно отображать их в интерфейсе
                 setBounds({
                     sw: [sw.lng, sw.lat],
                     ne: [ne.lng, ne.lat],
@@ -103,7 +102,6 @@ function App() {
         }
     }, [viewState.longitude, viewState.latitude, viewState.zoom]);
 
-    // Альтернативный вариант обработчика - более безопасный
     const handleMoveEnd = useCallback((evt: MapEvent) => {
         const map = evt.target;
         if (map && (map as any).getBounds) {
@@ -133,7 +131,6 @@ function App() {
         }
     }, []);
 
-    // Функция для форматированного вывода координат
     const logBounds = useCallback(() => {
         if (bounds) {
             console.log('Текущие границы карты:');
@@ -144,6 +141,34 @@ function App() {
         } else {
             console.log('Границы карты еще не загружены');
         }
+    }, [bounds]);
+
+    useEffect(() => {
+        const fetchContainers = async () => {
+            if (!bounds) return;
+
+            try {
+                setLoading(true);
+
+                const data = await getContainersInArea(
+                    bounds.nw[1],
+                    bounds.nw[0],
+                    bounds.se[1],
+                    bounds.se[0]
+                );
+
+                setContainers(data);
+                console.log(`Загружено ${data.length} контейнеров в видимой области`);
+            } catch (error) {
+                console.error('Не удалось загрузить контейнеры:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        const timeoutId = setTimeout(fetchContainers, 500);
+
+        return () => clearTimeout(timeoutId);
     }, [bounds]);
 
     const parkCoordinates: Coordinates[] = [
@@ -200,7 +225,6 @@ function App() {
 
     return (
         <div className="App">
-            {/* Кнопка для ручного вывода координат в консоль */}
             <button
                 onClick={logBounds}
                 style={{
@@ -218,7 +242,6 @@ function App() {
                 Вывести координаты в консоль
             </button>
 
-            {/* Блок для отображения координат на экране */}
             {bounds && (
                 <div style={{
                     position: 'absolute',
@@ -238,14 +261,31 @@ function App() {
                     <div>ЮВ: {bounds.se[0].toFixed(6)}, {bounds.se[1].toFixed(6)}</div>
                     <div>Центр: {viewState.longitude.toFixed(6)}, {viewState.latitude.toFixed(6)}</div>
                     <div>Зум: {viewState.zoom.toFixed(2)}</div>
+                    <div><strong>Контейнеров:</strong> {containers.length}</div>
+                </div>
+            )}
+
+            {loading && (
+                <div style={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    zIndex: 1000,
+                    background: 'rgba(255, 255, 255, 0.9)',
+                    padding: '20px',
+                    borderRadius: '8px',
+                    fontSize: '16px'
+                }}>
+                    Загрузка контейнеров...
                 </div>
             )}
 
             <Map
                 {...viewState}
                 onMove={handleMove}
-                onMoveEnd={handleMoveEnd} // Более безопасный вариант - срабатывает после завершения перемещения
-                onLoad={handleMoveEnd} // чтобы вывести координаты при загрузке
+                onMoveEnd={handleMoveEnd}
+                onLoad={handleMoveEnd}
                 style={{ width: '100vw', height: '100vh' }}
                 mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
             >
@@ -253,6 +293,80 @@ function App() {
                     <Layer {...parkFillLayer} />
                     <Layer {...parkOutlineLayer} />
                 </Source>
+
+                {containers.map((container) => {
+                    let lng: number, lat: number;
+                    if (Array.isArray(container.location.coordinates)) {
+                        [lng, lat] = container.location.coordinates;
+                    } else if (container.location.coordinates.x !== undefined && container.location.coordinates.y !== undefined) {
+                        lng = container.location.coordinates.x;
+                        lat = container.location.coordinates.y;
+                    } else {
+                        console.warn('Неизвестный формат координат:', container.location.coordinates);
+                        return null;
+                    }
+
+                    if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+                        console.warn(`Некорректные координаты для контейнера ${container.id}: lng=${lng}, lat=${lat}`);
+                        return null;
+                    }
+
+                    const wasteTypes = Array.isArray(container.wasteTypes) ? container.wasteTypes : [];
+                    const color = getContainerColor(wasteTypes);
+
+                    return (
+                        <Marker
+                            key={container.id}
+                            longitude={lng}
+                            latitude={lat}
+                            color={color}
+                            anchor="bottom"
+                            onClick={(e) => {
+                                e.originalEvent.stopPropagation();
+                                setSelectedContainer(container);
+                            }}
+                        />
+                    );
+                })}
+
+                {selectedContainer && (() => {
+                    let lng: number, lat: number;
+                    if (Array.isArray(selectedContainer.location.coordinates)) {
+                        [lng, lat] = selectedContainer.location.coordinates;
+                    } else {
+                        lng = selectedContainer.location.coordinates.x;
+                        lat = selectedContainer.location.coordinates.y;
+                    }
+
+                    return (
+                        <Popup
+                            longitude={lng}
+                            latitude={lat}
+                            anchor="top"
+                            onClose={() => setSelectedContainer(null)}
+                            closeOnClick={false}
+                        >
+                        <div style={{ maxWidth: '250px' }}>
+                            <h3 style={{ margin: '0 0 10px 0' }}>Мусорный контейнер</h3>
+                            <div>
+                                <strong>Адрес:</strong>
+                                <p style={{ margin: '5px 0' }}>
+                                    {selectedContainer.address.settlement}, {selectedContainer.address.district}<br />
+                                    {selectedContainer.address.street}, {selectedContainer.address.house}
+                                </p>
+                            </div>
+                            <div>
+                                <strong>Типы отходов:</strong>
+                                <ul style={{ margin: '5px 0', paddingLeft: '20px' }}>
+                                    {(Array.isArray(selectedContainer.wasteTypes) ? selectedContainer.wasteTypes : []).map((type, idx) => (
+                                        <li key={idx}>{getWasteTypeName(type)}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+                    </Popup>
+                    );
+                })()}
 
                 <Marker
                     longitude={60.6825}
