@@ -36,6 +36,21 @@ export interface Bounds {
     se: [number, number];
 }
 
+export interface ContainerReview {
+    id: string;
+    containerId: string;
+    authorName: string;
+    rating: number;
+    comment: string;
+    createdAt: string;
+}
+
+export interface CreateReviewRequest {
+    authorName: string;
+    rating: number;
+    comment?: string;
+}
+
 export function getWasteTypeName(wasteType: WasteType): string {
     const names: Record<WasteType, string> = {
         [WasteType.Plastic]: 'Пластик',

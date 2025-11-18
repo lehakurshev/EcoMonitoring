@@ -46,6 +46,7 @@ export function MapView({
                 bounds={bounds}
                 zoom={viewState.zoom}
                 viewState={viewState}
+                selectedContainer={selectedContainer}
                 onViewStateChange={onViewStateChange}
                 onContainerClick={onContainerSelect}
             />

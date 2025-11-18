@@ -9,6 +9,7 @@ interface ClusterLayerProps {
     bounds: Bounds | null;
     zoom: number;
     viewState: ViewState;
+    selectedContainer: ContainerInfo | null;
     onViewStateChange: (viewState: ViewState) => void;
     onContainerClick: (container: ContainerInfo) => void;
 }
@@ -18,6 +19,7 @@ export function ClusterLayer({
     bounds,
     zoom,
     viewState,
+    selectedContainer,
     onViewStateChange,
     onContainerClick
 }: ClusterLayerProps) {
@@ -64,6 +66,7 @@ export function ClusterLayer({
                         key={`container-${container.id}`}
                         container={container}
                         onClick={onContainerClick}
+                        isSelected={selectedContainer?.id === container.id}
                     />
                 );
             })}

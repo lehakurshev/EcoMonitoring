@@ -1,10 +1,7 @@
-import type { ContainerInfo } from './types';
+import type { ContainerInfo, ContainerReview, CreateReviewRequest } from './types';
 
 const API_BASE_URL = 'http://localhost:5101';
 
-/**
- * Получить все контейнеры
- */
 export async function getAllContainers(): Promise<ContainerInfo[]> {
     try {
         const response = await fetch(`${API_BASE_URL}/containers`);
@@ -21,13 +18,6 @@ export async function getAllContainers(): Promise<ContainerInfo[]> {
     }
 }
 
-/**
- * Получить контейнеры в заданной области
- * @param topLeftLat - широта верхнего левого угла
- * @param topLeftLng - долгота верхнего левого угла
- * @param bottomRightLat - широта нижнего правого угла
- * @param bottomRightLng - долгота нижнего правого угла
- */
 export async function getContainersInArea(
     topLeftLat: number,
     topLeftLng: number,
@@ -56,10 +46,6 @@ export async function getContainersInArea(
     }
 }
 
-/**
- * Получить контейнер по ID
- * @param id - идентификатор контейнера
- */
 export async function getContainerById(id: string): Promise<ContainerInfo> {
     try {
         const response = await fetch(`${API_BASE_URL}/containers/${id}`);
@@ -72,6 +58,48 @@ export async function getContainerById(id: string): Promise<ContainerInfo> {
         return data;
     } catch (error) {
         console.error(`Ошибка при получении контейнера ${id}:`, error);
+        throw error;
+    }
+}
+
+export async function getContainerReviews(containerId: string): Promise<ContainerReview[]> {
+    try {
+        const response = await fetch(`${API_BASE_URL}/containers/${containerId}/reviews`);
+        
+        if (!response.ok) {
+            throw new Error(`Ошибка HTTP: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error(`Ошибка при получении отзывов для контейнера ${containerId}:`, error);
+        throw error;
+    }
+}
+
+export async function createContainerReview(
+    containerId: string,
+    review: CreateReviewRequest
+): Promise<ContainerReview> {
+    try {
+        const response = await fetch(`${API_BASE_URL}/containers/${containerId}/reviews`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(review),
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || `Ошибка HTTP: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error(`Ошибка при создании отзыва для контейнера ${containerId}:`, error);
         throw error;
     }
 }
