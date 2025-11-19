@@ -75,6 +75,18 @@ export interface GreenZone {
     properties: Record<string, any>;
 }
 
+export interface AirQualityData {
+    location: Point;
+    district: string;
+    pm25: number;
+    pm10: number;
+    so2: number;
+    no2: number;
+    co: number;
+    o3: number;
+    aqi: number;
+}
+
 export function getWasteTypeName(wasteType: WasteType): string {
     const names: Record<WasteType, string> = {
         [WasteType.Plastic]: 'Пластик',

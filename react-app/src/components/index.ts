@@ -9,3 +9,5 @@ export { ClusterLayer } from './ClusterLayer/ClusterLayer';
 export { ContainerSidebar } from './ContainerSidebar/ContainerSidebar';
 export { AddContainerForm } from './AddContainerForm/AddContainerForm';
 export { GreenZoneLayer } from './GreenZoneLayer/GreenZoneLayer';
+export { AirQualityLayer } from './AirQualityLayer/AirQualityLayer';
+export { AirQualitySidebar } from './AirQualitySidebar/AirQualitySidebar';

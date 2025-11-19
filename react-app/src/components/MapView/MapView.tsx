@@ -1,20 +1,25 @@
 import Map, { Marker } from 'react-map-gl/maplibre';
 import type { ViewState, MapEvent } from 'react-map-gl/maplibre';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import type { ContainerInfo, Bounds, CreateContainerRequest, GreenZone } from '../../types';
+import type { ContainerInfo, Bounds, CreateContainerRequest, GreenZone, AirQualityData } from '../../types';
 import { ClusterLayer } from '../ClusterLayer/ClusterLayer';
 import { ContainerSidebar } from '../ContainerSidebar/ContainerSidebar';
 import { AddContainerSidebar } from '../AddContainerSidebar/AddContainerSidebar';
 import { GreenZoneLayer } from '../GreenZoneLayer/GreenZoneLayer';
+import { AirQualityLayer } from '../AirQualityLayer/AirQualityLayer';
+import { AirQualitySidebar } from '../AirQualitySidebar/AirQualitySidebar';
 
 interface MapViewProps {
     viewState: ViewState;
     bounds: Bounds | null;
     containers: ContainerInfo[];
     greenZones: GreenZone[];
+    airQualityData: AirQualityData[];
+    selectedAirQuality: AirQualityData | null;
     selectedContainer: ContainerInfo | null;
     showContainers: boolean;
     showGreenZones: boolean;
+    showAirQuality: boolean;
     addingContainer: boolean;
     newContainerPosition: { lat: number; lng: number } | null;
     onMove: (evt: MapEvent) => void;
@@ -23,6 +28,8 @@ interface MapViewProps {
     onContainerSelect: (container: ContainerInfo | null) => void;
     onToggleContainers: () => void;
     onToggleGreenZones: () => void;
+    onToggleAirQuality: () => void;
+    onAirQualitySelect: (data: AirQualityData | null) => void;
     onToggleAddMode: () => void;
     onMapClick: (lat: number, lng: number) => void;
     onSubmitContainer: (container: CreateContainerRequest) => Promise<void>;
@@ -34,9 +41,12 @@ export function MapView({
     bounds,
     containers,
     greenZones,
+    airQualityData,
+    selectedAirQuality,
     selectedContainer,
     showContainers,
     showGreenZones,
+    showAirQuality,
     addingContainer,
     newContainerPosition,
     onMove,
@@ -45,6 +55,8 @@ export function MapView({
     onContainerSelect,
     onToggleContainers,
     onToggleGreenZones,
+    onToggleAirQuality,
+    onAirQualitySelect,
     onToggleAddMode,
     onMapClick,
     onSubmitContainer,
@@ -63,6 +75,11 @@ export function MapView({
                     longitude={newContainerPosition.lng}
                     onSubmit={onSubmitContainer}
                     onCancel={onCancelAddContainer}
+                />
+            ) : showAirQuality ? (
+                <AirQualitySidebar
+                    data={selectedAirQuality}
+                    onClose={() => onAirQualitySelect(null)}
                 />
             ) : (
                 <ContainerSidebar
@@ -99,6 +116,20 @@ export function MapView({
                 <span style={{ fontSize: '20px' }}>🌳</span>
             </button>
             
+            <button
+                className="toggle-airquality-button"
+                onClick={onToggleAirQuality}
+                title={showAirQuality ? 'Скрыть качество воздуха' : 'Показать качество воздуха'}
+                style={{ 
+                    backgroundColor: showAirQuality ? '#1976D2' : 'white',
+                    borderColor: showAirQuality ? '#1976D2' : '#666',
+                    top: '160px',
+                    right: '20px'
+                }}
+            >
+                <span style={{ fontSize: '20px' }}>🌫️</span>
+            </button>
+            
             {showContainers && (
                 <button
                     className="add-container-button"
@@ -133,6 +164,12 @@ export function MapView({
             mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
         >
             {showGreenZones && <GreenZoneLayer greenZones={greenZones} />}
+            {showAirQuality && (
+                <AirQualityLayer 
+                    airQualityData={airQualityData} 
+                    onDistrictClick={onAirQualitySelect}
+                />
+            )}
             
             {showContainers && (
                 <ClusterLayer

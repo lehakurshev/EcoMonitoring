@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import type { ViewState, MapEvent } from 'react-map-gl/maplibre';
 import './App.css';
-import { MapView, LoadingIndicator } from './components';
-import { AddContainerSidebar } from './components/AddContainerSidebar/AddContainerSidebar';
+import { MapView } from './components';
 import { useMapBounds, useContainers, useGreenZones } from './hooks';
 import { createContainer } from './api';
-import type { ContainerInfo, CreateContainerRequest } from './types';
+import type { ContainerInfo, CreateContainerRequest, AirQualityData } from './types';
+import { mockAirQualityData } from './mockAirQualityData';
 
 function App() {
     const [viewState, setViewState] = useState<ViewState>({
@@ -25,11 +25,13 @@ function App() {
     const [selectedContainer, setSelectedContainer] = useState<ContainerInfo | null>(null);
     const [showContainers, setShowContainers] = useState(false);
     const [showGreenZones, setShowGreenZones] = useState(false);
+    const [showAirQuality, setShowAirQuality] = useState(false);
+    const [selectedAirQuality, setSelectedAirQuality] = useState<AirQualityData | null>(null);
     const [addingContainer, setAddingContainer] = useState(false);
     const [newContainerPosition, setNewContainerPosition] = useState<{ lat: number; lng: number } | null>(null);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const { bounds, updateBounds } = useMapBounds();
-    const { containers, loading } = useContainers(bounds);
+    const { containers } = useContainers(bounds);
     const { greenZones } = useGreenZones(bounds);
 
     const handleMove = (evt: MapEvent) => {
@@ -42,6 +44,8 @@ function App() {
     const handleToggleContainers = () => {
         if (!showContainers) {
             setShowGreenZones(false);
+            setShowAirQuality(false);
+            setSelectedAirQuality(null);
         }
         setShowContainers(!showContainers);
         if (showContainers) {
@@ -54,11 +58,28 @@ function App() {
     const handleToggleGreenZones = () => {
         if (!showGreenZones) {
             setShowContainers(false);
+            setShowAirQuality(false);
             setSelectedContainer(null);
             setAddingContainer(false);
             setNewContainerPosition(null);
+            setSelectedAirQuality(null);
         }
         setShowGreenZones(!showGreenZones);
+    };
+
+    const handleToggleAirQuality = () => {
+        if (!showAirQuality) {
+            setShowContainers(false);
+            setShowGreenZones(false);
+            setSelectedContainer(null);
+            setAddingContainer(false);
+            setNewContainerPosition(null);
+            setSelectedAirQuality(mockAirQualityData[0]);
+        }
+        setShowAirQuality(!showAirQuality);
+        if (showAirQuality) {
+            setSelectedAirQuality(null);
+        }
     };
 
     const handleToggleAddMode = () => {
@@ -89,7 +110,6 @@ function App() {
 
     return (
         <div className="App">
-            {loading && <LoadingIndicator />}
             {successMessage && (
                 <div className="success-message">
                     {successMessage}
@@ -101,9 +121,12 @@ function App() {
                 bounds={bounds}
                 containers={containers}
                 greenZones={greenZones}
+                airQualityData={mockAirQualityData}
+                selectedAirQuality={selectedAirQuality}
                 selectedContainer={selectedContainer}
                 showContainers={showContainers}
                 showGreenZones={showGreenZones}
+                showAirQuality={showAirQuality}
                 addingContainer={addingContainer}
                 newContainerPosition={newContainerPosition}
                 onMove={handleMove}
@@ -112,6 +135,8 @@ function App() {
                 onContainerSelect={setSelectedContainer}
                 onToggleContainers={handleToggleContainers}
                 onToggleGreenZones={handleToggleGreenZones}
+                onToggleAirQuality={handleToggleAirQuality}
+                onAirQualitySelect={setSelectedAirQuality}
                 onToggleAddMode={handleToggleAddMode}
                 onMapClick={handleMapClick}
                 onSubmitContainer={handleSubmitContainer}

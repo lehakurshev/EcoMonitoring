@@ -1,0 +1,131 @@
+.air-quality-sidebar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    width: 400px;
+    background: white;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+}
+
+.air-quality-sidebar__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.air-quality-sidebar__title {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.air-quality-sidebar__close {
+    background: none;
+    border: none;
+    font-size: 32px;
+    cursor: pointer;
+    color: #666;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+.air-quality-sidebar__close:hover {
+    color: #333;
+}
+
+.air-quality-sidebar__content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.air-quality-sidebar__district {
+    margin-bottom: 20px;
+}
+
+.air-quality-sidebar__district h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 500;
+    color: #333;
+    text-align: left;
+}
+
+.air-quality-sidebar__aqi {
+    border-radius: 12px;
+    padding: 24px;
+    color: white;
+    margin-bottom: 24px;
+}
+
+.aqi-value {
+    font-size: 48px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.aqi-level {
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.air-quality-sidebar__pollutants h3 {
+    margin: 0 0 16px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    text-align: left;
+}
+
+.pollutant-item {
+    margin-bottom: 20px;
+}
+
+.pollutant-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.pollutant-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: #333;
+}
+
+.pollutant-value {
+    font-size: 14px;
+    color: #666;
+}
+
+.pollutant-bar-container {
+    height: 8px;
+    background: #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 6px;
+}
+
+.pollutant-bar {
+    height: 100%;
+    transition: width 0.3s ease;
+    border-radius: 4px;
+}
+
+.pollutant-status {
+    font-size: 12px;
+    font-weight: 500;
+    text-align: left;
+}
