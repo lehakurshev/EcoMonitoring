@@ -21,6 +21,7 @@ function App() {
     });
 
     const [selectedContainer, setSelectedContainer] = useState<ContainerInfo | null>(null);
+    const [showContainers, setShowContainers] = useState(false);
     const { bounds, updateBounds } = useMapBounds();
     const { containers, loading } = useContainers(bounds);
 
@@ -29,6 +30,13 @@ function App() {
             setViewState((evt as any).viewState);
         }
         updateBounds(evt);
+    };
+
+    const handleToggleContainers = () => {
+        setShowContainers(!showContainers);
+        if (showContainers) {
+            setSelectedContainer(null);
+        }
     };
 
     return (
@@ -40,10 +48,12 @@ function App() {
                 bounds={bounds}
                 containers={containers}
                 selectedContainer={selectedContainer}
+                showContainers={showContainers}
                 onMove={handleMove}
                 onMoveEnd={updateBounds}
                 onViewStateChange={setViewState}
                 onContainerSelect={setSelectedContainer}
+                onToggleContainers={handleToggleContainers}
             />
         </div>
     );
