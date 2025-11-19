@@ -12,10 +12,9 @@ body {
     padding: 0;
 }
 
-.toggle-containers-button {
+.toggle-containers-button,
+.toggle-greenzones-button {
     position: absolute;
-    top: 20px;
-    right: 20px;
     z-index: 1000;
     background: white;
     border: 2px solid #333;
@@ -42,12 +41,14 @@ body {
     transition: all 0.2s ease;
 }
 
-.toggle-containers-button:hover {
+.toggle-containers-button:hover,
+.toggle-greenzones-button:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
     transform: translateY(-1px);
 }
 
-.toggle-containers-button:active {
+.toggle-containers-button:active,
+.toggle-greenzones-button:active {
     transform: translateY(0);
 }
 

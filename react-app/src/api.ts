@@ -1,4 +1,4 @@
-import type { ContainerInfo, ContainerReview, CreateReviewRequest, CreateContainerRequest } from './types';
+import type { ContainerInfo, ContainerReview, CreateReviewRequest, CreateContainerRequest, GreenZone } from './types';
 
 const API_BASE_URL = 'http://localhost:5101';
 
@@ -127,6 +127,34 @@ export async function createContainer(container: CreateContainerRequest): Promis
         return data;
     } catch (error) {
         console.error('Ошибка при создании контейнера:', error);
+        throw error;
+    }
+}
+
+export async function getGreenZonesInArea(
+    minLat: number,
+    maxLat: number,
+    minLon: number,
+    maxLon: number
+): Promise<GreenZone[]> {
+    try {
+        const params = new URLSearchParams({
+            minLat: minLat.toString(),
+            maxLat: maxLat.toString(),
+            minLon: minLon.toString(),
+            maxLon: maxLon.toString()
+        });
+        
+        const response = await fetch(`${API_BASE_URL}/api/greenzones/area?${params}`);
+        
+        if (!response.ok) {
+            throw new Error(`Ошибка HTTP: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Ошибка при получении зеленых зон:', error);
         throw error;
     }
 }

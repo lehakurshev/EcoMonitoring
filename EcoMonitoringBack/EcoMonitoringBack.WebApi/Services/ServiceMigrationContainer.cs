@@ -1,17 +1,21 @@
 ﻿using EcoMonitoringBack.Interfaces;
 using EcoMonitoringBack.Models.Common;
 using EcoMonitoringBack.Models.Container;
+using EcoMonitoringBack.Models.GreenZones;
 using OfficeOpenXml;
+using System.Text.Json;
 
 namespace EcoMonitoringBack.Services;
 
 public class ServiceMigrationContainer : IServiceMigrationContainer
 {
     private readonly IRepositoryContainerMigration _repositoryContainerMigration;
+    private readonly IRepositoryGreenZones _repositoryGreenZones;
     
-    public ServiceMigrationContainer(IRepositoryContainerMigration repositoryContainerMigration)
+    public ServiceMigrationContainer(IRepositoryContainerMigration repositoryContainerMigration, IRepositoryGreenZones repositoryGreenZones)
     {
         _repositoryContainerMigration = repositoryContainerMigration;
+        _repositoryGreenZones = repositoryGreenZones;
     }
 
 
@@ -86,5 +90,91 @@ public class ServiceMigrationContainer : IServiceMigrationContainer
 
         return result;
     }
-    
+
+    public async Task MigrateGreenZonesAsync()
+    {
+        var possiblePaths = new[]
+        {
+            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "export.geojson"),
+            Path.Combine(Directory.GetCurrentDirectory(), "export.geojson"),
+            "export.geojson"
+        };
+
+        string? geojsonPath = null;
+        foreach (var path in possiblePaths)
+        {
+            if (File.Exists(path))
+            {
+                geojsonPath = path;
+                break;
+            }
+        }
+
+        if (geojsonPath == null)
+        {
+            throw new FileNotFoundException($"GeoJSON file not found. Searched in: {string.Join(", ", possiblePaths)}");
+        }
+
+        var jsonString = await File.ReadAllTextAsync(geojsonPath);
+        var geoJsonDoc = JsonDocument.Parse(jsonString);
+
+        var greenZones = new List<GreenZoneMongo>();
+        var features = geoJsonDoc.RootElement.GetProperty("features");
+
+        foreach (var feature in features.EnumerateArray())
+        {
+            var properties = feature.GetProperty("properties");
+            
+            var type = GetPropertyValue(properties, "leisure") 
+                      ?? GetPropertyValue(properties, "landuse") 
+                      ?? GetPropertyValue(properties, "natural");
+
+            if (type == null) continue;
+
+            var geometry = feature.GetProperty("geometry");
+            var geometryType = geometry.GetProperty("type").GetString();
+
+            if (geometryType != "Polygon") continue;
+
+            var coordinates = geometry.GetProperty("coordinates")[0];
+            var points = new List<Point>();
+
+            foreach (var coord in coordinates.EnumerateArray())
+            {
+                var lon = coord[0].GetDouble();
+                var lat = coord[1].GetDouble();
+                points.Add(new Point(lat, lon));
+            }
+
+            if (points.Count < 4) continue;
+
+            var greenZone = new GreenZoneMongo
+            {
+                Name = GetPropertyValue(properties, "name") ?? GetPropertyValue(properties, "name:ru"),
+                Type = type,
+                Subtype = GetPropertyValue(properties, "park_type") ?? GetPropertyValue(properties, "wood_type"),
+                Coordinates = points,
+                Properties = ExtractProperties(properties)
+            };
+
+            greenZones.Add(greenZone);
+        }
+
+        await _repositoryGreenZones.CreateManyAsync(greenZones);
+    }
+
+    private string? GetPropertyValue(JsonElement properties, string key)
+    {
+        return properties.TryGetProperty(key, out var value) ? value.GetString() : null;
+    }
+
+    private Dictionary<string, object> ExtractProperties(JsonElement properties)
+    {
+        var dict = new Dictionary<string, object>();
+        foreach (var prop in properties.EnumerateObject())
+        {
+            dict[prop.Name] = prop.Value.ToString();
+        }
+        return dict;
+    }
 }

@@ -16,6 +16,24 @@ public class ContainerMigrationController : ControllerBase
         _serviceMigrationContainer = serviceMigrationContainer;
     }
 
+    [HttpPost("greenzones")]
+    public async Task<ActionResult> MigrateGreenZones()
+    {
+        try
+        {
+            await _serviceMigrationContainer.MigrateGreenZonesAsync();
+            return Ok(new { message = "Green zones migration completed successfully" });
+        }
+        catch (FileNotFoundException ex)
+        {
+            return NotFound(new { error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = $"Migration failed: {ex.Message}" });
+        }
+    }
+
     [HttpPost("start")]
     public async Task<ActionResult> StartMigration(IFormFile file)
     {

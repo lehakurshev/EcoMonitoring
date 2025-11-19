@@ -1,17 +1,20 @@
 import Map, { Marker } from 'react-map-gl/maplibre';
 import type { ViewState, MapEvent } from 'react-map-gl/maplibre';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import type { ContainerInfo, Bounds, CreateContainerRequest } from '../../types';
+import type { ContainerInfo, Bounds, CreateContainerRequest, GreenZone } from '../../types';
 import { ClusterLayer } from '../ClusterLayer/ClusterLayer';
 import { ContainerSidebar } from '../ContainerSidebar/ContainerSidebar';
 import { AddContainerSidebar } from '../AddContainerSidebar/AddContainerSidebar';
+import { GreenZoneLayer } from '../GreenZoneLayer/GreenZoneLayer';
 
 interface MapViewProps {
     viewState: ViewState;
     bounds: Bounds | null;
     containers: ContainerInfo[];
+    greenZones: GreenZone[];
     selectedContainer: ContainerInfo | null;
     showContainers: boolean;
+    showGreenZones: boolean;
     addingContainer: boolean;
     newContainerPosition: { lat: number; lng: number } | null;
     onMove: (evt: MapEvent) => void;
@@ -19,6 +22,7 @@ interface MapViewProps {
     onViewStateChange: (viewState: ViewState) => void;
     onContainerSelect: (container: ContainerInfo | null) => void;
     onToggleContainers: () => void;
+    onToggleGreenZones: () => void;
     onToggleAddMode: () => void;
     onMapClick: (lat: number, lng: number) => void;
     onSubmitContainer: (container: CreateContainerRequest) => Promise<void>;
@@ -29,8 +33,10 @@ export function MapView({
     viewState,
     bounds,
     containers,
+    greenZones,
     selectedContainer,
     showContainers,
+    showGreenZones,
     addingContainer,
     newContainerPosition,
     onMove,
@@ -38,6 +44,7 @@ export function MapView({
     onViewStateChange,
     onContainerSelect,
     onToggleContainers,
+    onToggleGreenZones,
     onToggleAddMode,
     onMapClick,
     onSubmitContainer,
@@ -70,10 +77,26 @@ export function MapView({
                 title={showContainers ? 'Скрыть контейнеры' : 'Показать контейнеры'}
                 style={{ 
                     backgroundColor: showContainers ? '#1976D2' : 'white',
-                    borderColor: showContainers ? '#1976D2' : '#666'
+                    borderColor: showContainers ? '#1976D2' : '#666',
+                    top: '20px',
+                    right: '20px'
                 }}
             >
                 <span style={{ fontSize: '20px' }}>🗑️</span>
+            </button>
+            
+            <button
+                className="toggle-greenzones-button"
+                onClick={onToggleGreenZones}
+                title={showGreenZones ? 'Скрыть зеленые зоны' : 'Показать зеленые зоны'}
+                style={{ 
+                    backgroundColor: showGreenZones ? '#1976D2' : 'white',
+                    borderColor: showGreenZones ? '#1976D2' : '#666',
+                    top: '90px',
+                    right: '20px'
+                }}
+            >
+                <span style={{ fontSize: '20px' }}>🌳</span>
             </button>
             
             {showContainers && (
@@ -109,6 +132,8 @@ export function MapView({
             }}
             mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
         >
+            {showGreenZones && <GreenZoneLayer greenZones={greenZones} />}
+            
             {showContainers && (
                 <ClusterLayer
                     containers={containers}

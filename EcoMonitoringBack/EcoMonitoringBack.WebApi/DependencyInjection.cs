@@ -16,6 +16,7 @@ public static class DependencyInjection
         services.AddScoped<IRepositoryContainers, RepositoryContainers>();
         services.AddScoped<IRepositoryContainerMigration, RepositoryContainerMigration>();
         services.AddScoped<IRepositoryReviews, RepositoryReviews>();
+        services.AddScoped<IRepositoryGreenZones, RepositoryGreenZones>();
         return services;
     }
 }

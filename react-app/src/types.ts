@@ -61,6 +61,20 @@ export interface CreateContainerRequest {
     house: string;
 }
 
+export interface Point {
+    latitude: number;
+    longitude: number;
+}
+
+export interface GreenZone {
+    id: string;
+    name?: string;
+    type: string;
+    subtype?: string;
+    coordinates: Point[];
+    properties: Record<string, any>;
+}
+
 export function getWasteTypeName(wasteType: WasteType): string {
     const names: Record<WasteType, string> = {
         [WasteType.Plastic]: 'Пластик',

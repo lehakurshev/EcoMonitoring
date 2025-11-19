@@ -5,13 +5,35 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EcoMonitoringBack.Controllers;
 
+[ApiController]
+[Route("api/greenzones")]
 public class GreenZoneController : ControllerBase
 {
     private readonly IGreenZoneService _geoAnalysisService;
+    private readonly IRepositoryGreenZones _repositoryGreenZones;
 
-    public GreenZoneController(IGreenZoneService geoAnalysisService)
+    public GreenZoneController(IGreenZoneService geoAnalysisService, IRepositoryGreenZones repositoryGreenZones)
     {
         _geoAnalysisService = geoAnalysisService;
+        _repositoryGreenZones = repositoryGreenZones;
+    }
+
+    [HttpGet("area")]
+    public async Task<ActionResult<List<GreenZoneMongo>>> GetByArea(
+        [FromQuery] double minLat,
+        [FromQuery] double maxLat,
+        [FromQuery] double minLon,
+        [FromQuery] double maxLon)
+    {
+        try
+        {
+            var greenZones = await _repositoryGreenZones.GetByAreaAsync(minLat, maxLat, minLon, maxLon);
+            return Ok(greenZones);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = $"Ошибка при получении зеленых зон: {ex.Message}" });
+        }
     }    
 
     [HttpPost("analyze-polygon")]

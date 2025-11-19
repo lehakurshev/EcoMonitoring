@@ -3,7 +3,7 @@ import type { ViewState, MapEvent } from 'react-map-gl/maplibre';
 import './App.css';
 import { MapView, LoadingIndicator } from './components';
 import { AddContainerSidebar } from './components/AddContainerSidebar/AddContainerSidebar';
-import { useMapBounds, useContainers } from './hooks';
+import { useMapBounds, useContainers, useGreenZones } from './hooks';
 import { createContainer } from './api';
 import type { ContainerInfo, CreateContainerRequest } from './types';
 
@@ -24,11 +24,13 @@ function App() {
 
     const [selectedContainer, setSelectedContainer] = useState<ContainerInfo | null>(null);
     const [showContainers, setShowContainers] = useState(false);
+    const [showGreenZones, setShowGreenZones] = useState(false);
     const [addingContainer, setAddingContainer] = useState(false);
     const [newContainerPosition, setNewContainerPosition] = useState<{ lat: number; lng: number } | null>(null);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const { bounds, updateBounds } = useMapBounds();
     const { containers, loading } = useContainers(bounds);
+    const { greenZones } = useGreenZones(bounds);
 
     const handleMove = (evt: MapEvent) => {
         if ((evt as any).viewState) {
@@ -38,12 +40,25 @@ function App() {
     };
 
     const handleToggleContainers = () => {
+        if (!showContainers) {
+            setShowGreenZones(false);
+        }
         setShowContainers(!showContainers);
         if (showContainers) {
             setSelectedContainer(null);
             setAddingContainer(false);
             setNewContainerPosition(null);
         }
+    };
+
+    const handleToggleGreenZones = () => {
+        if (!showGreenZones) {
+            setShowContainers(false);
+            setSelectedContainer(null);
+            setAddingContainer(false);
+            setNewContainerPosition(null);
+        }
+        setShowGreenZones(!showGreenZones);
     };
 
     const handleToggleAddMode = () => {
@@ -85,8 +100,10 @@ function App() {
                 viewState={viewState}
                 bounds={bounds}
                 containers={containers}
+                greenZones={greenZones}
                 selectedContainer={selectedContainer}
                 showContainers={showContainers}
+                showGreenZones={showGreenZones}
                 addingContainer={addingContainer}
                 newContainerPosition={newContainerPosition}
                 onMove={handleMove}
@@ -94,6 +111,7 @@ function App() {
                 onViewStateChange={setViewState}
                 onContainerSelect={setSelectedContainer}
                 onToggleContainers={handleToggleContainers}
+                onToggleGreenZones={handleToggleGreenZones}
                 onToggleAddMode={handleToggleAddMode}
                 onMapClick={handleMapClick}
                 onSubmitContainer={handleSubmitContainer}

@@ -35,6 +35,15 @@ public static class SetupApplication
                         Console.WriteLine("ееееееееееееееее боиии");
                     }
                 }
+                
+                var greenZonesRepo = services.GetRequiredService<IRepositoryGreenZones>();
+                if (await greenZonesRepo.CountAsync() == 0)
+                {
+                    Console.WriteLine("Запуск миграции зеленых зон...");
+                    var migrationService = services.GetRequiredService<IServiceMigrationContainer>();
+                    await migrationService.MigrateGreenZonesAsync();
+                    Console.WriteLine($"Миграция зеленых зон завершена. Загружено зон: {await greenZonesRepo.CountAsync()}");
+                }
             }
             catch (Exception ex)
             {
