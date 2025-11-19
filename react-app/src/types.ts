@@ -51,6 +51,16 @@ export interface CreateReviewRequest {
     comment?: string;
 }
 
+export interface CreateContainerRequest {
+    wasteTypes: number[];
+    latitude: number;
+    longitude: number;
+    settlement: string;
+    district: string;
+    street: string;
+    house: string;
+}
+
 export function getWasteTypeName(wasteType: WasteType): string {
     const names: Record<WasteType, string> = {
         [WasteType.Plastic]: 'Пластик',
@@ -66,18 +76,21 @@ export function getWasteTypeName(wasteType: WasteType): string {
     return names[wasteType] || 'Неизвестно';
 }
 
-export function getContainerColor(wasteTypes: WasteType[]): string {
-    if (wasteTypes.length === 0) return '#757575';
-
-    if (wasteTypes.includes(WasteType.Hazardous)) return '#D32F2F';
-    if (wasteTypes.includes(WasteType.Batteries)) return '#F57C00';
-    if (wasteTypes.includes(WasteType.Electronics)) return '#1976D2';
-    if (wasteTypes.includes(WasteType.Glass)) return '#00897B';
-    if (wasteTypes.includes(WasteType.Plastic)) return '#FBC02D';
-    if (wasteTypes.includes(WasteType.Paper)) return '#0288D1';
-    if (wasteTypes.includes(WasteType.Metal)) return '#455A64';
-    if (wasteTypes.includes(WasteType.Organic)) return '#689F38';
-    if (wasteTypes.includes(WasteType.Clothes)) return '#8E24AA';
-
+export function getContainerColor(_wasteTypes: WasteType[]): string {
     return '#757575';
+}
+
+export function getWasteTypeColor(wasteType: WasteType): string {
+    const colors: Record<WasteType, string> = {
+        [WasteType.Hazardous]: '#D32F2F',
+        [WasteType.Batteries]: '#F57C00',
+        [WasteType.Electronics]: '#1976D2',
+        [WasteType.Glass]: '#00897B',
+        [WasteType.Plastic]: '#F9A825',
+        [WasteType.Paper]: '#0288D1',
+        [WasteType.Metal]: '#455A64',
+        [WasteType.Organic]: '#689F38',
+        [WasteType.Clothes]: '#8E24AA'
+    };
+    return colors[wasteType] || '#757575';
 }

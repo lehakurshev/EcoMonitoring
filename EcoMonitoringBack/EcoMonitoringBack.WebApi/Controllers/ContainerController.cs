@@ -1,4 +1,5 @@
-﻿using EcoMonitoringBack.Interfaces;
+﻿using EcoMonitoringBack.Dto;
+using EcoMonitoringBack.Interfaces;
 using EcoMonitoringBack.Models.Common;
 using EcoMonitoringBack.Models.Container;
 using Microsoft.AspNetCore.Mvc;
@@ -79,16 +80,47 @@ public class ContainerController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<ContainerInfo>> CreateContainer([FromBody] ContainerInfo container)
+    public async Task<ActionResult<ContainerInfo>> CreateContainer([FromBody] CreateContainerRequest request)
     {
         try
         {
-            if (container == null)
+            if (request == null)
             {
                 return BadRequest(new { error = "Данные контейнера не могут быть пустыми" });
             }
 
+            if (request.WasteTypes == null || request.WasteTypes.Length == 0)
+            {
+                return BadRequest(new { error = "Необходимо выбрать хотя бы один тип отходов" });
+            }
+
+            if (string.IsNullOrWhiteSpace(request.Settlement))
+            {
+                return BadRequest(new { error = "Населенный пункт обязателен" });
+            }
+
+            if (string.IsNullOrWhiteSpace(request.District))
+            {
+                return BadRequest(new { error = "Район обязателен" });
+            }
+
+            if (string.IsNullOrWhiteSpace(request.Street))
+            {
+                return BadRequest(new { error = "Улица обязательна" });
+            }
+
+            var wasteTypes = request.WasteTypes.Select(wt => (WasteType)wt).ToList();
+            var address = new Address(
+                request.Settlement,
+                request.District,
+                request.Street,
+                request.House ?? string.Empty
+            );
+            var coordinates = new Point(request.Latitude, request.Longitude);
+            
+            var container = new ContainerInfo(wasteTypes, coordinates, address);
             var createdContainer = await _serviceContainers.CreateContainerAsync(container);
+            
             return CreatedAtAction(nameof(GetContainerById), new { id = createdContainer.Id }, createdContainer);
         }
         catch (Exception ex)

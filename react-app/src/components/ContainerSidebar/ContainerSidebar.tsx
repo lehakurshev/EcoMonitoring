@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { ContainerInfo, ContainerReview } from '../../types';
 import { getContainerReviews, createContainerReview } from '../../api';
+import { getWasteTypeName, getWasteTypeColor } from '../../types';
 import './ContainerSidebar.css';
 
 interface ContainerSidebarProps {
@@ -110,6 +111,26 @@ export function ContainerSidebar({ container, onClose }: ContainerSidebarProps) 
                         {container.address.street}, {container.address.house}
                     </p>
                 </div>
+
+                {container.wasteTypes && container.wasteTypes.length > 0 && (
+                    <div className="container-sidebar__section">
+                        <h3 className="container-sidebar__section-title">Типы отходов</h3>
+                        <div className="waste-types-list">
+                            {container.wasteTypes.map((type, index) => (
+                                <div 
+                                    key={index} 
+                                    className="waste-type-badge"
+                                    style={{ 
+                                        backgroundColor: getWasteTypeColor(type),
+                                        color: 'white'
+                                    }}
+                                >
+                                    {getWasteTypeName(type)}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
 
                 <div className="container-sidebar__section">
                     <h3 className="container-sidebar__section-title">Оставить отзыв</h3>

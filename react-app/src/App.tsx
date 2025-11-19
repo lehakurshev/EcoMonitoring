@@ -2,8 +2,10 @@ import { useState } from 'react';
 import type { ViewState, MapEvent } from 'react-map-gl/maplibre';
 import './App.css';
 import { MapView, LoadingIndicator } from './components';
+import { AddContainerSidebar } from './components/AddContainerSidebar/AddContainerSidebar';
 import { useMapBounds, useContainers } from './hooks';
-import type { ContainerInfo } from './types';
+import { createContainer } from './api';
+import type { ContainerInfo, CreateContainerRequest } from './types';
 
 function App() {
     const [viewState, setViewState] = useState<ViewState>({
@@ -22,6 +24,9 @@ function App() {
 
     const [selectedContainer, setSelectedContainer] = useState<ContainerInfo | null>(null);
     const [showContainers, setShowContainers] = useState(false);
+    const [addingContainer, setAddingContainer] = useState(false);
+    const [newContainerPosition, setNewContainerPosition] = useState<{ lat: number; lng: number } | null>(null);
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const { bounds, updateBounds } = useMapBounds();
     const { containers, loading } = useContainers(bounds);
 
@@ -36,12 +41,45 @@ function App() {
         setShowContainers(!showContainers);
         if (showContainers) {
             setSelectedContainer(null);
+            setAddingContainer(false);
+            setNewContainerPosition(null);
+        }
+    };
+
+    const handleToggleAddMode = () => {
+        if (!addingContainer) {
+            setSelectedContainer(null);
+            setNewContainerPosition(null);
+        }
+        setAddingContainer(!addingContainer);
+    };
+
+    const handleMapClick = (lat: number, lng: number) => {
+        if (addingContainer) {
+            setNewContainerPosition({ lat, lng });
+        }
+    };
+
+    const handleSubmitContainer = async (container: CreateContainerRequest) => {
+        try {
+            await createContainer(container);
+            setNewContainerPosition(null);
+            setAddingContainer(false);
+            setSuccessMessage('Контейнер успешно добавлен');
+            setTimeout(() => setSuccessMessage(null), 3000);
+        } catch (error) {
+            throw error;
         }
     };
 
     return (
         <div className="App">
             {loading && <LoadingIndicator />}
+            {successMessage && (
+                <div className="success-message">
+                    {successMessage}
+                </div>
+            )}
 
             <MapView
                 viewState={viewState}
@@ -49,11 +87,20 @@ function App() {
                 containers={containers}
                 selectedContainer={selectedContainer}
                 showContainers={showContainers}
+                addingContainer={addingContainer}
+                newContainerPosition={newContainerPosition}
                 onMove={handleMove}
                 onMoveEnd={updateBounds}
                 onViewStateChange={setViewState}
                 onContainerSelect={setSelectedContainer}
                 onToggleContainers={handleToggleContainers}
+                onToggleAddMode={handleToggleAddMode}
+                onMapClick={handleMapClick}
+                onSubmitContainer={handleSubmitContainer}
+                onCancelAddContainer={() => {
+                    setNewContainerPosition(null);
+                    setAddingContainer(false);
+                }}
             />
         </div>
     );

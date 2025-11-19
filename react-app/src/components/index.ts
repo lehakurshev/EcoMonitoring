@@ -7,3 +7,4 @@ export { MapView } from './MapView/MapView';
 export { ParkLayer } from './ParkLayer/ParkLayer';
 export { ClusterLayer } from './ClusterLayer/ClusterLayer';
 export { ContainerSidebar } from './ContainerSidebar/ContainerSidebar';
+export { AddContainerForm } from './AddContainerForm/AddContainerForm';
