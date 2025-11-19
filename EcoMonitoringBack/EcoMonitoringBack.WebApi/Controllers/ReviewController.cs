@@ -9,11 +9,11 @@ namespace EcoMonitoringBack.Controllers;
 [Route("containers/{containerId}/reviews")]
 public class ReviewController : ControllerBase
 {
-    private readonly IRepositoryReviews _repositoryReviews;
+    private readonly IServiceReviews _serviceReviews;
 
-    public ReviewController(IRepositoryReviews repositoryReviews)
+    public ReviewController(IServiceReviews serviceReviews)
     {
-        _repositoryReviews = repositoryReviews;
+        _serviceReviews = serviceReviews;
     }
 
     [HttpGet]
@@ -21,8 +21,12 @@ public class ReviewController : ControllerBase
     {
         try
         {
-            var reviews = await _repositoryReviews.GetReviewsByContainerIdAsync(containerId);
+            var reviews = await _serviceReviews.GetReviewsByContainerIdAsync(containerId);
             return Ok(reviews);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { error = ex.Message });
         }
         catch (Exception ex)
         {
@@ -37,27 +41,12 @@ public class ReviewController : ControllerBase
     {
         try
         {
-            if (string.IsNullOrWhiteSpace(request.AuthorName))
-            {
-                return BadRequest(new { error = "Имя автора не может быть пустым" });
-            }
-
-            if (request.Rating < 1 || request.Rating > 5)
-            {
-                return BadRequest(new { error = "Рейтинг должен быть от 1 до 5" });
-            }
-
-            var review = new ContainerReview
-            {
-                ContainerId = containerId,
-                AuthorName = request.AuthorName,
-                Rating = request.Rating,
-                Comment = request.Comment ?? string.Empty,
-                CreatedAt = DateTime.UtcNow
-            };
-
-            var createdReview = await _repositoryReviews.CreateReviewAsync(review);
+            var createdReview = await _serviceReviews.CreateReviewAsync(containerId, request);
             return CreatedAtAction(nameof(GetReviews), new { containerId }, createdReview);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { error = ex.Message });
         }
         catch (Exception ex)
         {

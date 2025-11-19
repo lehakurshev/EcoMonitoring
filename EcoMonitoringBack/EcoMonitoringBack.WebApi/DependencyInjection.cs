@@ -12,6 +12,7 @@ public static class DependencyInjection
         services.AddScoped<IGreenZoneService, GreenZoneServiceService>();
         services.AddScoped<IServiceMigrationContainer, ServiceMigrationContainer>();
         services.AddScoped<IServiceContainers, ServiceContainers>();
+        services.AddScoped<IServiceReviews, ServiceReviews>();
         services.AddScoped<IRepositoryContainers, RepositoryContainers>();
         services.AddScoped<IRepositoryContainerMigration, RepositoryContainerMigration>();
         services.AddScoped<IRepositoryReviews, RepositoryReviews>();
