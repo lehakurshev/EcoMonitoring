@@ -75,6 +75,11 @@ export interface GreenZone {
     properties: Record<string, any>;
 }
 
+export interface GreenZonePoint {
+    radius: number;
+    coordinates: Point;
+}
+
 export interface AirQualityData {
     location: Point;
     district: string;

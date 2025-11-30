@@ -1,4 +1,11 @@
-import type { ContainerInfo, ContainerReview, CreateReviewRequest, CreateContainerRequest, GreenZone } from './types';
+import type {
+    ContainerInfo,
+    ContainerReview,
+    CreateReviewRequest,
+    CreateContainerRequest,
+    GreenZone,
+    GreenZonePoint, Point
+} from './types';
 
 const API_BASE_URL = 'http://localhost:5101';
 
@@ -151,6 +158,57 @@ export async function getGreenZonesInArea(
             throw new Error(`Ошибка HTTP: ${response.status}`);
         }
         
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Ошибка при получении зеленых зон:', error);
+        throw error;
+    }
+}
+
+export interface GreenZoneAreaAndCenter {
+    center: Point;
+    areaHectares: number;
+}
+
+// Функция преобразования
+export function adaptToGreenZonePoint(backendData: GreenZoneAreaAndCenter): GreenZonePoint {
+    return {
+        coordinates: backendData.center,
+        radius: backendData.areaHectares
+    };
+}
+
+export async function getGreenZonesPointsAndAreaInArea(
+    minLat: number,
+    maxLat: number,
+    minLon: number,
+    maxLon: number
+): Promise<GreenZonePoint[]> {
+    const forMap = await getGreenZonesPointsAndAreaInAreaResponse(minLat, maxLat, minLon, maxLon);
+    return forMap.map(g => adaptToGreenZonePoint(g))
+}
+
+export async function getGreenZonesPointsAndAreaInAreaResponse(
+    minLat: number,
+    maxLat: number,
+    minLon: number,
+    maxLon: number
+): Promise<GreenZoneAreaAndCenter[]> {
+    try {
+        const params = new URLSearchParams({
+            minLat: minLat.toString(),
+            maxLat: maxLat.toString(),
+            minLon: minLon.toString(),
+            maxLon: maxLon.toString()
+        });
+
+        const response = await fetch(`${API_BASE_URL}/api/greenzones/area/points?${params}`);
+
+        if (!response.ok) {
+            throw new Error(`Ошибка HTTP: ${response.status}`);
+        }
+
         const data = await response.json();
         return data;
     } catch (error) {

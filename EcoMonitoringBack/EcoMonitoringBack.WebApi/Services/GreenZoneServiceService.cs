@@ -4,18 +4,17 @@ using EcoMonitoringBack.Models.GreenZones;
 
 namespace EcoMonitoringBack.Services;
 
-public class GreenZoneServiceService : IGreenZoneService
+public class GreenZoneService : IGreenZoneService
 {
     private const double EarthRadiusMeters = 6378137.0;
 
-    public GreenZoneAreaAndCenter CalculatePolygonAreaAndCenter(GreenZoneData greenZoneData)
+    public GreenZoneAreaAndCenter CalculatePolygonAreaAndCenter(List<Point> coordinates)
     {
-        if (!IsValidPolygon(greenZoneData.Coordinates))
+        if (!IsValidPolygon(coordinates))
         {
             throw new ArgumentException("Invalid polygon coordinates");
         }
         
-        var coordinates = greenZoneData.Coordinates;
             
         // Вычисляем площадь
         var areaSquareMeters = CalculateSphericalArea(coordinates);

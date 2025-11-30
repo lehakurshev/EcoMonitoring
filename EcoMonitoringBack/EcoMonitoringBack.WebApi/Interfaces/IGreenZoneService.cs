@@ -5,6 +5,6 @@ namespace EcoMonitoringBack.Interfaces;
 
 public interface IGreenZoneService
 {
-    GreenZoneAreaAndCenter CalculatePolygonAreaAndCenter(GreenZoneData greenZoneData);
+    GreenZoneAreaAndCenter CalculatePolygonAreaAndCenter(List<Point> greenZoneData);
     bool IsValidPolygon(List<Point> coordinates);
 }

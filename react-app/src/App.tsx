@@ -6,6 +6,7 @@ import { useMapBounds, useContainers, useGreenZones } from './hooks';
 import { createContainer } from './api';
 import type { ContainerInfo, CreateContainerRequest, AirQualityData } from './types';
 import { mockAirQualityData } from './mockAirQualityData';
+import {useGreenZoneDataHeatMap} from "./hooks/useGreenZoneDataHeatMap.ts";
 
 function App() {
     const [viewState, setViewState] = useState<ViewState>({
@@ -33,6 +34,7 @@ function App() {
     const { bounds, updateBounds } = useMapBounds();
     const { containers } = useContainers(bounds);
     const { greenZones } = useGreenZones(bounds);
+    const { greenZonePoints } = useGreenZoneDataHeatMap(bounds)
 
     const handleMove = (evt: MapEvent) => {
         if ((evt as any).viewState) {
@@ -121,6 +123,7 @@ function App() {
                 bounds={bounds}
                 containers={containers}
                 greenZones={greenZones}
+                greenZonePoints={greenZonePoints}
                 airQualityData={mockAirQualityData}
                 selectedAirQuality={selectedAirQuality}
                 selectedContainer={selectedContainer}

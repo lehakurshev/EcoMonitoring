@@ -1,7 +1,14 @@
 import Map, { Marker } from 'react-map-gl/maplibre';
 import type { ViewState, MapEvent } from 'react-map-gl/maplibre';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import type { ContainerInfo, Bounds, CreateContainerRequest, GreenZone, AirQualityData } from '../../types';
+import type {
+    ContainerInfo,
+    Bounds,
+    CreateContainerRequest,
+    GreenZone,
+    AirQualityData,
+    GreenZonePoint
+} from '../../types';
 import { ClusterLayer } from '../ClusterLayer/ClusterLayer';
 import { ContainerSidebar } from '../ContainerSidebar/ContainerSidebar';
 import { AddContainerSidebar } from '../AddContainerSidebar/AddContainerSidebar';
@@ -14,6 +21,7 @@ interface MapViewProps {
     bounds: Bounds | null;
     containers: ContainerInfo[];
     greenZones: GreenZone[];
+    greenZonePoints: GreenZonePoint[]
     airQualityData: AirQualityData[];
     selectedAirQuality: AirQualityData | null;
     selectedContainer: ContainerInfo | null;
@@ -41,6 +49,7 @@ export function MapView({
     bounds,
     containers,
     greenZones,
+    greenZonePoints,
     airQualityData,
     selectedAirQuality,
     selectedContainer,
@@ -163,7 +172,7 @@ export function MapView({
             }}
             mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
         >
-            {showGreenZones && <GreenZoneLayer greenZones={greenZones} />}
+            {showGreenZones && <GreenZoneLayer greenZones={greenZonePoints} />}
             {showAirQuality && (
                 <AirQualityLayer 
                     airQualityData={airQualityData} 

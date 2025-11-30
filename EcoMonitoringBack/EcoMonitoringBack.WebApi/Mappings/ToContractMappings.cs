@@ -54,7 +54,7 @@ public static class ToContractMappings
         return new EcoGreenZoneAreaAndCenter
         {
             Center = zone.Center.ToEcoPoint(),
-            AreaHectares = zone.AreaHectares
+            Area = zone.AreaHectares
         };
     }
     
