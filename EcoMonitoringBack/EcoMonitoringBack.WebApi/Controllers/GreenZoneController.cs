@@ -39,7 +39,7 @@ public class GreenZoneController : ControllerBase
             return StatusCode(500, new { error = $"Ошибка при получении зеленых зон: {ex.Message}" });
         }
     }
-    
+
     [HttpGet("area/points")]
     public async Task<ActionResult<List<EcoGreenZoneAreaAndCenter>>> GetByAreaPoints(
         [FromQuery] double minLat,
@@ -62,33 +62,6 @@ public class GreenZoneController : ControllerBase
         catch (Exception ex)
         {
             return StatusCode(500, new { error = $"Ошибка при получении зеленых зон: {ex.Message}" });
-        }
-    }  
-
-    [HttpPost("analyze-polygon")]
-    public ActionResult<EcoGreenZoneAreaAndCenter> AnalyzePolygon([FromBody] EcoGreenZoneData greenZoneData)
-    {
-        try
-        {
-            if (greenZoneData == null)
-            {
-                return BadRequest(new { error = "Данные не могут быть пустыми" });
-            }
-
-            var domainModel = greenZoneData.ToGreenZoneData().Coordinates;
-
-            if (!_geoAnalysisService.IsValidPolygon(domainModel))
-            {
-                return BadRequest(new { error = "Некорректный формат полигона. Ожидается минимум 4 точки" });
-            }
-
-            var result = _geoAnalysisService.CalculatePolygonAreaAndCenter(domainModel);
-                
-            return Ok(result.ToEcoGreenZoneAreaAndCenter());
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { error = $"Ошибка при анализе полигона: {ex.Message}" });
         }
     }
 

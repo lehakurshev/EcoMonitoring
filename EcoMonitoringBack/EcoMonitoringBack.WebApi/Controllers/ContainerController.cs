@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace EcoMonitoringBack.Controllers;
 
 [ApiController]
-[Route("containers")]
+[Route("api/containers")]
 public class ContainerController : ControllerBase
 {
     private readonly IServiceContainers _serviceContainers;
