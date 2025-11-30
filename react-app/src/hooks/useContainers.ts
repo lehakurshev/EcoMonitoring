@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import type { Bounds } from '../types';
 import { getContainersInArea } from '../api';
 import type { ContainerInfo } from '../types';
@@ -22,9 +22,7 @@ export function useContainers(bounds: Bounds | null) {
                 );
                 
                 setContainers(data);
-                console.log(`Загружено ${data.length} контейнеров в видимой области`);
             } catch (error) {
-                console.error('Не удалось загрузить контейнеры:', error);
             } finally {
                 setLoading(false);
             }

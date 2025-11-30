@@ -18,4 +18,6 @@ public interface IRepositoryContainers
     Task<bool> ContainerExistsAsync(string id);
 
     Task<bool> IsHaveDbContainersAsync();
+    
+    Task DeleteAllContainersAsync();
 }

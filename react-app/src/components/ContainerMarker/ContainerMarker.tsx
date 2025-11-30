@@ -13,7 +13,6 @@ export function ContainerMarker({ container, onClick, isSelected = false }: Cont
     const lng = container.location.longitude;
 
     if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
-        console.warn(`Некорректные координаты для контейнера ${container.id}: lng=${lng}, lat=${lat}`);
         return null;
     }
 

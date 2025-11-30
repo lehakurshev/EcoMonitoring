@@ -25,7 +25,6 @@ public class RepositoryContainerMigration : IRepositoryContainerMigration
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Что-то пошло не так: {ex.Message}");
             throw;
         }
     }

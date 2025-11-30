@@ -30,7 +30,6 @@ export function ContainerSidebar({ container, onClose }: ContainerSidebarProps) 
                 setReviews(data);
             } catch (err) {
                 setError('Не удалось загрузить отзывы');
-                console.error(err);
             } finally {
                 setLoading(false);
             }

@@ -17,11 +17,9 @@ public class GreenZoneServiceService : IGreenZoneService
         
         var coordinates = greenZoneData.Coordinates;
             
-        // Вычисляем площадь
         var areaSquareMeters = CalculateSphericalArea(coordinates);
         var areaHectares = areaSquareMeters / 10000;
             
-        // Вычисляем центр масс
         var center = CalculateCentroid(coordinates);
 
         return new GreenZoneAreaAndCenter

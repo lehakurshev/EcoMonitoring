@@ -39,7 +39,6 @@ public class ServiceMigrationContainer : IServiceMigrationContainer
         }
         finally
         {
-            // Очистка временного файла
             if (File.Exists(tempPath))
             {
                 File.Delete(tempPath);
@@ -72,16 +71,44 @@ public class ServiceMigrationContainer : IServiceMigrationContainer
                 continue;
 
             double latitude = 0.0;
-            var a = worksheet.Cells[row, 33].Value?.ToString() ?? "";
-            var parsed = Double.TryParse(a.Replace('.', ','), out latitude);
-            if (!parsed)
-                throw new InvalidOperationException("Файл не содержит рабочих листов");
-            double longitude = 0.0;
-            a = worksheet.Cells[row, 34].Value?.ToString() ?? "";
-            parsed = Double.TryParse(a.Replace('.', ','), out longitude);
-            if (!parsed)
-                throw new InvalidOperationException("Файл не содержит рабочих листов");
+            var latValue = worksheet.Cells[row, 33].Value;
+            if (latValue is double latDouble)
+            {
+                latitude = latDouble;
+            }
+            else if (latValue != null)
+            {
+                var latStr = latValue.ToString() ?? "";
+                if (!Double.TryParse(latStr, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out latitude))
+                {
+                    if (!Double.TryParse(latStr.Replace('.', ','), out latitude))
+                        throw new InvalidOperationException($"Не удалось распарсить широту: {latStr}");
+                }
+            }
+            else
+            {
+                throw new InvalidOperationException("Широта отсутствует");
+            }
 
+            double longitude = 0.0;
+            var lonValue = worksheet.Cells[row, 34].Value;
+            if (lonValue is double lonDouble)
+            {
+                longitude = lonDouble;
+            }
+            else if (lonValue != null)
+            {
+                var lonStr = lonValue.ToString() ?? "";
+                if (!Double.TryParse(lonStr, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out longitude))
+                {
+                    if (!Double.TryParse(lonStr.Replace('.', ','), out longitude))
+                        throw new InvalidOperationException($"Не удалось распарсить долготу: {lonStr}");
+                }
+            }
+            else
+            {
+                throw new InvalidOperationException("Долгота отсутствует");
+            }
 
             var address = new Address(settlement, district, street, house);
             var coordinates = new Point(latitude, longitude);

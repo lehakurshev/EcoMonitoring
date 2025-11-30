@@ -20,7 +20,9 @@ public static class ToContractMappings
     
     public static EcoPoint ToEcoPoint(this GeoJsonPoint<GeoJson2DCoordinates> point)
     {
-        return new EcoPoint(point.Coordinates.Y, point.Coordinates.X);
+        var latitude = point.Coordinates.Y;
+        var longitude = point.Coordinates.X;
+        return new EcoPoint(latitude, longitude);
     }
     
     public static EcoContainerInfo ToEcoContainerInfo(this ContainerInfo info)
