@@ -9,17 +9,8 @@ interface ContainerMarkerProps {
 }
 
 export function ContainerMarker({ container, onClick, isSelected = false }: ContainerMarkerProps) {
-    let lng: number, lat: number;
-
-    if (Array.isArray(container.location.coordinates)) {
-        [lng, lat] = container.location.coordinates;
-    } else if (container.location.coordinates.x !== undefined && container.location.coordinates.y !== undefined) {
-        lng = container.location.coordinates.x;
-        lat = container.location.coordinates.y;
-    } else {
-        console.warn('Неизвестный формат координат:', container.location.coordinates);
-        return null;
-    }
+    const lat = container.location.latitude;
+    const lng = container.location.longitude;
 
     if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
         console.warn(`Некорректные координаты для контейнера ${container.id}: lng=${lng}, lat=${lat}`);

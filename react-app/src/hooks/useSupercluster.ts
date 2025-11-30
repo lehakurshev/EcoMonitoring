@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import Supercluster from 'supercluster';
-import type { ContainerInfo } from './types';
+import type { ContainerInfo } from '../types';
 
 type BBox = [number, number, number, number];
 type GeoJsonProperties = Record<string, any>;
@@ -20,19 +20,11 @@ export function useSupercluster({ containers, bounds, zoom }: UseSuperclusterPro
             minPoints: 2,
         });
 
-
+        console.log(containers);
         const points = containers
             .map((container) => {
-                let lng: number, lat: number;
-                
-                if (Array.isArray(container.location.coordinates)) {
-                    [lng, lat] = container.location.coordinates;
-                } else if (container.location.coordinates.x !== undefined && container.location.coordinates.y !== undefined) {
-                    lng = container.location.coordinates.x;
-                    lat = container.location.coordinates.y;
-                } else {
-                    return null;
-                }
+                const lat = container.location.latitude;
+                const lng = container.location.longitude;
 
                 if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
                     return null;

@@ -22,10 +22,7 @@ export interface Address {
 export interface ContainerInfo {
     id: string;
     wasteTypes: WasteType[];
-    location: {
-        type: string | number;
-        coordinates: [number, number] | { x: number; y: number; values?: number[] };
-    };
+    location: Point;
     address: Address;
 }
 

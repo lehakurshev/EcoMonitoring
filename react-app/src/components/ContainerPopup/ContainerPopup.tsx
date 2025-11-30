@@ -9,14 +9,8 @@ interface ContainerPopupProps {
 }
 
 export function ContainerPopup({ container, onClose }: ContainerPopupProps) {
-    let lng: number, lat: number;
-
-    if (Array.isArray(container.location.coordinates)) {
-        [lng, lat] = container.location.coordinates;
-    } else {
-        lng = container.location.coordinates.x;
-        lat = container.location.coordinates.y;
-    }
+    const lat = container.location.latitude;
+    const lng = container.location.longitude;
 
     return (
         <Popup
