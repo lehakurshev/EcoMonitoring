@@ -7,7 +7,7 @@ import type {
     GreenZonePoint, Point
 } from './types';
 
-const API_BASE_URL = 'http://localhost:5101';
+const API_BASE_URL = 'http://localhost:5101/api';
 
 export async function getAllContainers(): Promise<ContainerInfo[]> {
     try {
@@ -152,7 +152,7 @@ export async function getGreenZonesInArea(
             maxLon: maxLon.toString()
         });
         
-        const response = await fetch(`${API_BASE_URL}/api/greenzones/area?${params}`);
+        const response = await fetch(`${API_BASE_URL}/greenzones/area?${params}`);
         
         if (!response.ok) {
             throw new Error(`Ошибка HTTP: ${response.status}`);
