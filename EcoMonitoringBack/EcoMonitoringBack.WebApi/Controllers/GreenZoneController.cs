@@ -1,5 +1,6 @@
-﻿using EcoMonitoringBack.Interfaces;
-using EcoMonitoringBack.Models.Common;
+﻿using EcoMonitoringBack.ContractModels;
+using EcoMonitoringBack.Interfaces;
+using EcoMonitoringBack.Mappings;
 using EcoMonitoringBack.Models.GreenZones;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,7 +20,7 @@ public class GreenZoneController : ControllerBase
     }
 
     [HttpGet("area")]
-    public async Task<ActionResult<List<GreenZoneMongo>>> GetByArea(
+    public async Task<ActionResult<List<EcoGreenZone>>> GetByArea(
         [FromQuery] double minLat,
         [FromQuery] double maxLat,
         [FromQuery] double minLon,
@@ -27,7 +28,9 @@ public class GreenZoneController : ControllerBase
     {
         try
         {
-            var greenZones = await _repositoryGreenZones.GetByAreaAsync(minLat, maxLat, minLon, maxLon);
+            var greenZones = (await _repositoryGreenZones.GetByAreaAsync(minLat, maxLat, minLon, maxLon))?
+                .Select(x => x.ToEcoGreenZone())
+                .ToList();
             return Ok(greenZones);
         }
         catch (Exception ex)
@@ -37,7 +40,7 @@ public class GreenZoneController : ControllerBase
     }    
 
     [HttpPost("analyze-polygon")]
-    public ActionResult<GreenZoneAreaAndCenter> AnalyzePolygon([FromBody] GreenZoneData greenZoneData)
+    public ActionResult<EcoGreenZoneAreaAndCenter> AnalyzePolygon([FromBody] EcoGreenZoneData greenZoneData)
     {
         try
         {
@@ -46,14 +49,16 @@ public class GreenZoneController : ControllerBase
                 return BadRequest(new { error = "Данные не могут быть пустыми" });
             }
 
-            if (!_geoAnalysisService.IsValidPolygon(greenZoneData.Coordinates))
+            var domainModel = greenZoneData.ToGreenZoneData();
+
+            if (!_geoAnalysisService.IsValidPolygon(domainModel.Coordinates))
             {
                 return BadRequest(new { error = "Некорректный формат полигона. Ожидается минимум 4 точки" });
             }
 
-            var result = _geoAnalysisService.CalculatePolygonAreaAndCenter(greenZoneData);
+            var result = _geoAnalysisService.CalculatePolygonAreaAndCenter(domainModel);
                 
-            return Ok(result);
+            return Ok(result.ToEcoGreenZoneAreaAndCenter());
         }
         catch (Exception ex)
         {
@@ -62,7 +67,7 @@ public class GreenZoneController : ControllerBase
     }
 
     [HttpPost("analyze-polygons")]
-    public ActionResult<List<GreenZoneAreaAndCenter>> AnalyzePolygonsBatch([FromBody] List<GreenZoneData> greenZoneDates)
+    public ActionResult<List<EcoGreenZoneAreaAndCenter>> AnalyzePolygonsBatch([FromBody] List<EcoGreenZoneData> greenZoneDates)
     {
         try
         {
@@ -71,14 +76,15 @@ public class GreenZoneController : ControllerBase
                 return BadRequest(new { error = "Список полигонов не может быть пустым" });
             }
 
-            var results = new List<GreenZoneAreaAndCenter>();
+            var results = new List<EcoGreenZoneAreaAndCenter>();
 
             foreach (var greenZoneData in greenZoneDates)
             {
-                if (_geoAnalysisService.IsValidPolygon(greenZoneData.Coordinates))
+                var domainModel = greenZoneData.ToGreenZoneData();
+                if (_geoAnalysisService.IsValidPolygon(domainModel.Coordinates))
                 {
-                    var result = _geoAnalysisService.CalculatePolygonAreaAndCenter(greenZoneData);
-                    results.Add(result);
+                    var result = _geoAnalysisService.CalculatePolygonAreaAndCenter(domainModel);
+                    results.Add(result.ToEcoGreenZoneAreaAndCenter());
                 }
             }
 

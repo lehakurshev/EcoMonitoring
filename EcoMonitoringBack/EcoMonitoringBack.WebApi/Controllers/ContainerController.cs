@@ -1,5 +1,6 @@
-﻿using EcoMonitoringBack.Dto;
+﻿using EcoMonitoringBack.ContractModels;
 using EcoMonitoringBack.Interfaces;
+using EcoMonitoringBack.Mappings;
 using EcoMonitoringBack.Models.Common;
 using EcoMonitoringBack.Models.Container;
 using Microsoft.AspNetCore.Mvc;
@@ -18,11 +19,13 @@ public class ContainerController : ControllerBase
     }
     
     [HttpGet]
-    public async Task<ActionResult<List<ContainerInfo>>> GetAllContainers()
+    public async Task<ActionResult<List<EcoContainerInfo>>> GetAllContainers()
     {
         try
         {
-            var containers = await _serviceContainers.GetAllContainersAsync();
+            var containers = (await _serviceContainers.GetAllContainersAsync())?
+                .Select(x => x.ToEcoContainerInfo())
+                .ToList();
             return Ok(containers);
         }
         catch (Exception ex)
@@ -32,7 +35,7 @@ public class ContainerController : ControllerBase
     }
 
     [HttpGet("area")]
-    public async Task<ActionResult<List<ContainerInfo>>> GetContainersInArea(
+    public async Task<ActionResult<List<EcoContainerInfo>>> GetContainersInArea(
         [FromQuery] double topLeftLat, 
         [FromQuery] double topLeftLng,
         [FromQuery] double bottomRightLat, 
@@ -43,7 +46,9 @@ public class ContainerController : ControllerBase
             var topLeft = new Point(topLeftLat, topLeftLng);
             var bottomRight = new Point(bottomRightLat, bottomRightLng);
             
-            var containers = await _serviceContainers.GetContainersInAreaAsync(topLeft, bottomRight);
+            var containers = (await _serviceContainers.GetContainersInAreaAsync(topLeft, bottomRight))?
+                .Select(x => x.ToEcoContainerInfo())
+                .ToList();
             return Ok(containers);
         }
         catch (Exception ex)
@@ -53,7 +58,7 @@ public class ContainerController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<ContainerInfo>> GetContainerById(string id)
+    public async Task<ActionResult<EcoContainerInfo>> GetContainerById(string id)
     {
         try
         {
@@ -71,7 +76,7 @@ public class ContainerController : ControllerBase
                 return NotFound(new { error = "Контейнер не найден" });
             }
 
-            return Ok(container);
+            return Ok(container.ToEcoContainerInfo());
         }
         catch (Exception ex)
         {
@@ -80,7 +85,7 @@ public class ContainerController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<ContainerInfo>> CreateContainer([FromBody] CreateContainerRequest request)
+    public async Task<ActionResult<EcoContainerInfo>> CreateContainer([FromBody] EcoCreateContainerRequest request)
     {
         try
         {
@@ -121,7 +126,7 @@ public class ContainerController : ControllerBase
             var container = new ContainerInfo(wasteTypes, coordinates, address);
             var createdContainer = await _serviceContainers.CreateContainerAsync(container);
             
-            return CreatedAtAction(nameof(GetContainerById), new { id = createdContainer.Id }, createdContainer);
+            return CreatedAtAction(nameof(GetContainerById), new { id = createdContainer.Id }, createdContainer.ToEcoContainerInfo());
         }
         catch (Exception ex)
         {
@@ -130,7 +135,7 @@ public class ContainerController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult> UpdateContainer(string id, [FromBody] ContainerInfo container)
+    public async Task<ActionResult> UpdateContainer(string id, [FromBody] EcoContainerInfoParams container)
     {
         try
         {
@@ -145,7 +150,7 @@ public class ContainerController : ControllerBase
                 return NotFound(new { error = "Контейнер не найден" });
             }
 
-            var result = await _serviceContainers.UpdateContainerAsync(id, container);
+            var result = await _serviceContainers.UpdateContainerAsync(id, container.ToDomain(id));
             
             if (result)
             {

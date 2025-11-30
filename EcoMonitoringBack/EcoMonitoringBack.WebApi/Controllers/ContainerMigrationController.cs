@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.Design;
-using EcoMonitoringBack.Dto;
-using EcoMonitoringBack.Interfaces;
-using EcoMonitoringBack.Models.Container;
+﻿using EcoMonitoringBack.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EcoMonitoringBack.Controllers;

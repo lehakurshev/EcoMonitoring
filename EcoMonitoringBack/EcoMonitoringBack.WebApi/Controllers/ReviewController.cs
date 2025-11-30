@@ -1,6 +1,6 @@
-using EcoMonitoringBack.Dto;
+using EcoMonitoringBack.ContractModels;
 using EcoMonitoringBack.Interfaces;
-using EcoMonitoringBack.Models.Container;
+using EcoMonitoringBack.Mappings;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EcoMonitoringBack.Controllers;
@@ -17,11 +17,13 @@ public class ReviewController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<ContainerReview>>> GetReviews(string containerId)
+    public async Task<ActionResult<List<EcoContainerReview>>> GetReviews(string containerId)
     {
         try
         {
-            var reviews = await _serviceReviews.GetReviewsByContainerIdAsync(containerId);
+            var reviews = (await _serviceReviews.GetReviewsByContainerIdAsync(containerId))?
+                .Select(x => x.ToEcoContainerReview())
+                .ToList();
             return Ok(reviews);
         }
         catch (ArgumentException ex)
@@ -35,14 +37,14 @@ public class ReviewController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<ContainerReview>> CreateReview(
+    public async Task<ActionResult<EcoContainerReview>> CreateReview(
         string containerId,
-        [FromBody] CreateReviewRequest request)
+        [FromBody] EcoCreateReviewRequest request)
     {
         try
         {
-            var createdReview = await _serviceReviews.CreateReviewAsync(containerId, request);
-            return CreatedAtAction(nameof(GetReviews), new { containerId }, createdReview);
+            var createdReview = await _serviceReviews.CreateReviewAsync(containerId, request.ToCreateReviewRequest());
+            return CreatedAtAction(nameof(GetReviews), new { containerId }, createdReview.ToEcoContainerReview());
         }
         catch (ArgumentException ex)
         {

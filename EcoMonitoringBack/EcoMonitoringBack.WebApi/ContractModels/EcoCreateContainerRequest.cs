@@ -1,6 +1,6 @@
-namespace EcoMonitoringBack.Dto;
+namespace EcoMonitoringBack.ContractModels;
 
-public record CreateContainerRequest(
+public record EcoCreateContainerRequest(
     int[] WasteTypes,
     double Latitude,
     double Longitude,
