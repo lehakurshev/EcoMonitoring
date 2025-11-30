@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace EcoMonitoringBack.Controllers;
 
 [ApiController]
-[Route("migration")]
+[Route("api/migration")]
 public class ContainerMigrationController : ControllerBase
 {
     private readonly IServiceMigrationContainer _serviceMigrationContainer;
@@ -31,7 +31,7 @@ public class ContainerMigrationController : ControllerBase
         }
     }
 
-    [HttpPost("start")]
+    [HttpPost("containers")]
     public async Task<ActionResult> StartMigration(IFormFile file)
     {
         try

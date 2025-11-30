@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace EcoMonitoringBack.Controllers;
 
 [ApiController]
-[Route("containers/{containerId}/reviews")]
+[Route("api/containers/{containerId}/reviews")]
 public class ReviewController : ControllerBase
 {
     private readonly IServiceReviews _serviceReviews;
