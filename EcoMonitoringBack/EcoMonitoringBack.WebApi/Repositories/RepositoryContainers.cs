@@ -24,9 +24,14 @@ public class RepositoryContainers : IRepositoryContainers
         var filter = Builders<ContainerInfo>.Filter.Empty;
         var count = await _containers.CountDocumentsAsync(filter, new CountOptions
         {
-            Limit = 1 // Останавливаем подсчет после первого найденного
+            Limit = 1
         });
         return count > 0;
+    }
+    
+    public async Task DeleteAllContainersAsync()
+    {
+        await _containers.DeleteManyAsync(Builders<ContainerInfo>.Filter.Empty);
     }
     
     public async Task<List<ContainerInfo>> GetAllContainersAsync()

@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: ecomonitoring-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: EcoMonitoringDB
+    networks:
+      - ecomonitoring-network
+
+  backend:
+    build:
+      context: ./EcoMonitoringBack
+      dockerfile: EcoMonitoringBack.WebApi/Dockerfile
+    container_name: ecomonitoring-backend
+    restart: unless-stopped
+    ports:
+      - "5101:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - MongoDbSettings__ConnectionString=mongodb://mongodb:27017/
+      - MongoDbSettings__DatabaseName=EcoMonitoringDB
+      - ASPNETCORE_URLS=http://+:8080
+    depends_on:
+      - mongodb
+    networks:
+      - ecomonitoring-network
+
+  frontend:
+    build:
+      context: ./react-app
+      dockerfile: Dockerfile
+    container_name: ecomonitoring-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - ecomonitoring-network
+
+volumes:
+  mongodb_data:
+    driver: local
+
+networks:
+  ecomonitoring-network:
+    driver: bridge

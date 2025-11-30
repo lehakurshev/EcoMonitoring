@@ -20,7 +20,6 @@ export function useGreenZones(bounds: Bounds | null) {
                 const zones = await getGreenZonesInArea(minLat, maxLat, minLon, maxLon);
                 setGreenZones(zones);
             } catch (error) {
-                console.error('Ошибка при загрузке зеленых зон:', error);
             } finally {
                 setLoading(false);
             }

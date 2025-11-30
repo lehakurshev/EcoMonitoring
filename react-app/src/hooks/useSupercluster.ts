@@ -20,7 +20,6 @@ export function useSupercluster({ containers, bounds, zoom }: UseSuperclusterPro
             minPoints: 2,
         });
 
-        console.log(containers);
         const points = containers
             .map((container) => {
                 const lat = container.location.latitude;

@@ -7,7 +7,7 @@ import type {
     GreenZonePoint, Point
 } from './types';
 
-const API_BASE_URL = 'http://localhost:5101/api';
+const API_BASE_URL = import.meta.env.PROD ? '/api' : 'http://localhost:5101/api';
 
 export async function getAllContainers(): Promise<ContainerInfo[]> {
     try {
@@ -20,7 +20,6 @@ export async function getAllContainers(): Promise<ContainerInfo[]> {
         const data = await response.json();
         return data;
     } catch (error) {
-        console.error('Ошибка при получении контейнеров:', error);
         throw error;
     }
 }
@@ -48,7 +47,6 @@ export async function getContainersInArea(
         const data = await response.json();
         return data;
     } catch (error) {
-        console.error('Ошибка при получении контейнеров в области:', error);
         throw error;
     }
 }
@@ -64,7 +62,6 @@ export async function getContainerById(id: string): Promise<ContainerInfo> {
         const data = await response.json();
         return data;
     } catch (error) {
-        console.error(`Ошибка при получении контейнера ${id}:`, error);
         throw error;
     }
 }
@@ -80,7 +77,6 @@ export async function getContainerReviews(containerId: string): Promise<Containe
         const data = await response.json();
         return data;
     } catch (error) {
-        console.error(`Ошибка при получении отзывов для контейнера ${containerId}:`, error);
         throw error;
     }
 }
@@ -106,15 +102,12 @@ export async function createContainerReview(
         const data = await response.json();
         return data;
     } catch (error) {
-        console.error(`Ошибка при создании отзыва для контейнера ${containerId}:`, error);
         throw error;
     }
 }
 
 export async function createContainer(container: CreateContainerRequest): Promise<ContainerInfo> {
     try {
-        console.log('Отправка данных контейнера:', container);
-        
         const response = await fetch(`${API_BASE_URL}/containers`, {
             method: 'POST',
             headers: {
@@ -125,15 +118,12 @@ export async function createContainer(container: CreateContainerRequest): Promis
         
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({ error: `Ошибка HTTP: ${response.status}` }));
-            console.error('Ошибка ответа сервера:', errorData);
             throw new Error(errorData.error || `Ошибка HTTP: ${response.status}`);
         }
         
         const data = await response.json();
-        console.log('Контейнер успешно создан:', data);
         return data;
     } catch (error) {
-        console.error('Ошибка при создании контейнера:', error);
         throw error;
     }
 }
@@ -161,7 +151,6 @@ export async function getGreenZonesInArea(
         const data = await response.json();
         return data;
     } catch (error) {
-        console.error('Ошибка при получении зеленых зон:', error);
         throw error;
     }
 }
