@@ -9,9 +9,15 @@
 
 ### Запуск проекта
 
-1. Убедитесь, что Docker Desktop запущен
+1. Скопируйте файл с переменными окружения и установите пароль для MongoDB:
+   ```powershell
+   Copy-Item .env.example .env
+   # Откройте .env и измените MONGODB_PASSWORD на сильный пароль
+   ```
 
-2. Запустите проект одной командой:
+2. Убедитесь, что Docker Desktop запущен
+
+3. Запустите проект одной командой:
    ```powershell
    .\start-docker.ps1
    ```
@@ -21,7 +27,7 @@
    docker-compose up -d --build
    ```
 
-3. Откройте браузер:
+4. Откройте браузер:
    - Фронтенд: http://localhost:3000
    - Бэкенд API: http://localhost:5101/api
 
