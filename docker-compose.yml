@@ -6,11 +6,13 @@ services:
     container_name: ecomonitoring-mongodb
     restart: unless-stopped
     ports:
-      - "27017:27017"
+      - "127.0.0.1:27017:27017"
     volumes:
       - mongodb_data:/data/db
     environment:
       MONGO_INITDB_DATABASE: EcoMonitoringDB
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD:-ChangeMe123!}
     networks:
       - ecomonitoring-network
 
@@ -26,7 +28,7 @@ services:
       - ./logs/backend:/app/logs
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - MongoDbSettings__ConnectionString=mongodb://mongodb:27017/
+      - MongoDbSettings__ConnectionString=mongodb://admin:${MONGODB_PASSWORD:-ChangeMe123!}@mongodb:27017/EcoMonitoringDB?authSource=admin
       - MongoDbSettings__DatabaseName=EcoMonitoringDB
       - ASPNETCORE_URLS=http://+:8080
     healthcheck:
