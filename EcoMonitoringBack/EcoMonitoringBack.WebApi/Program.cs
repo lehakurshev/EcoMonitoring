@@ -2,8 +2,17 @@ using EcoMonitoringBack;
 using EcoMonitoringBack.Dto;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
+using Serilog;
+
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(new ConfigurationBuilder()
+        .AddJsonFile("appsettings.json")
+        .Build())
+    .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog();
 
 builder.Services.AddHttpClient();
 //builder.Services.AddCustomClients();
@@ -31,7 +40,6 @@ builder.Services.AddScoped(serviceProvider =>
 //builder.Services.AddWebServices();
 builder.Services.AddInjection();
 builder.Services.AddControllers();
-
 
 builder.Services.AddHttpContextAccessor();
 
