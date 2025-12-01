@@ -4,13 +4,13 @@ export { GreenZoneLayer } from './GreenZoneLayer';
 
 // Функция создания облака точек с адаптивной плотностью
 export function createPointCloud(zone: GreenZonePoint, config: any) {
-    const centerLng = zone.coordinates[0]?.longitude || 0;
-    const centerLat = zone.coordinates[0]?.latitude || 0;
+    const centerLng = zone.coordinates.longitude || 0;
+    const centerLat = zone.coordinates.latitude || 0;
     const radius = zone.radius || config.baseRadius;
 
     const points = [];
     const pointsCount = config.pointDensity;
-    const maxDistanceDegrees = radius / 111000; // радиус в градусах
+    const maxDistanceDegrees = radius / 2200000;
 
     // 1. Центральная точка с усиленным весом
     points.push({
@@ -75,15 +75,3 @@ export function createPointCloud(zone: GreenZonePoint, config: any) {
     return points;
 }
 
-
-const exampleZones: any[] = [
-    { radius: 2, coordinates: [{ longitude: 37.61, latitude: 55.75 }] },    // Маленький (слой 1)
-    { radius: 8, coordinates: [{ longitude: 37.62, latitude: 55.76 }] },    // Средний (слой 2)
-    { radius: 50, coordinates: [{ longitude: 37.63, latitude: 55.77 }] },   // Большой (слой 3)
-    { radius: 200, coordinates: [{ longitude: 37.64, latitude: 55.78 }] },  // Очень большой (слой 4)
-    { radius: 1000, coordinates: [{ longitude: 37.65, latitude: 55.79 }] }, // Огромный (слой 5)
-    { radius: 5000, coordinates: [{ longitude: 37.66, latitude: 55.80 }] }, // Гигантский (слой 6)
-];
-
-// В компоненте:
-//<GreenZoneLayer greenZones={exampleZones} />

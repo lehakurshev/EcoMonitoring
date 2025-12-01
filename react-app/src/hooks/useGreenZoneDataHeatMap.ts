@@ -3,7 +3,7 @@ import type {Bounds, GreenZonePoint} from '../types';
 import {getGreenZonesPointsAndAreaInArea} from '../api';
 
 export function useGreenZoneDataHeatMap(bounds: Bounds | null) {
-    const [greenZones, setGreenZones] = useState<GreenZonePoint[]>([]);
+    const [greenZonePoints, setGreenZonePoints] = useState<GreenZonePoint[]>([]);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
@@ -18,7 +18,7 @@ export function useGreenZoneDataHeatMap(bounds: Bounds | null) {
                 const maxLon = Math.max(bounds.sw[0], bounds.ne[0]);
 
                 const zones = await getGreenZonesPointsAndAreaInArea(minLat, maxLat, minLon, maxLon);
-                setGreenZones(zones);
+                setGreenZonePoints(zones);
             } catch (error) {
                 console.error('Ошибка при загрузке зеленых зон:', error);
             } finally {
@@ -29,5 +29,5 @@ export function useGreenZoneDataHeatMap(bounds: Bounds | null) {
         return () => clearTimeout(timeoutId);
     }, [bounds]);
 
-    return { greenZones, loading };
+    return { greenZonePoints, loading };
 }

@@ -186,14 +186,14 @@ export async function getGreenZonesInArea(
 
 export interface GreenZoneAreaAndCenter {
     center: Point;
-    areaHectares: number;
+    area: number;
 }
 
 // Функция преобразования
 export function adaptToGreenZonePoint(backendData: GreenZoneAreaAndCenter): GreenZonePoint {
     return {
         coordinates: backendData.center,
-        radius: backendData.areaHectares
+        radius: 10000 * backendData.area
     };
 }
 
@@ -221,7 +221,7 @@ export async function getGreenZonesPointsAndAreaInAreaResponse(
             maxLon: maxLon.toString()
         });
 
-        const response = await fetch(`${API_BASE_URL}/api/greenzones/area/points?${params}`);
+        const response = await fetch(`${API_BASE_URL}/greenzones/area/points?${params}`);
 
         if (!response.ok) {
             throw new Error(`Ошибка HTTP: ${response.status}`);
@@ -230,7 +230,7 @@ export async function getGreenZonesPointsAndAreaInAreaResponse(
         const data = await response.json();
         return data;
     } catch (error) {
-        console.error('Ошибка при получении зеленых зон:', error);
+        logger.error('Ошибка при получении зеленых зон:', error);
         throw error;
     }
 }
