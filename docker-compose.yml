@@ -22,11 +22,19 @@ services:
     restart: unless-stopped
     ports:
       - "5101:8080"
+    volumes:
+      - ./logs/backend:/app/logs
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - MongoDbSettings__ConnectionString=mongodb://mongodb:27017/
       - MongoDbSettings__DatabaseName=EcoMonitoringDB
       - ASPNETCORE_URLS=http://+:8080
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/containers"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     depends_on:
       - mongodb
     networks:

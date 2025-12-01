@@ -17,7 +17,7 @@ RUN dotnet publish "EcoMonitoringBack.WebApi.csproj" -c $BUILD_CONFIGURATION -o 
 
 FROM base AS final
 WORKDIR /app
+RUN mkdir -p /app/logs
 COPY --from=publish /app/publish .
-# Copy all files from source directory
 COPY --from=build /src/EcoMonitoringBack.WebApi/ ./
 ENTRYPOINT ["dotnet", "EcoMonitoringBack.WebApi.dll"]
