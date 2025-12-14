@@ -1,6 +1,4 @@
-﻿
-
-namespace EcoMonitoringBack.Interfaces;
+﻿namespace EcoMonitoringBack.Interfaces;
 
 public interface IServiceMigrationContainer
 {

@@ -4,7 +4,7 @@ public class EcoContainerInfo
 {
     public string Id { get; set; }
     
-    public List<EcoWasteType> WasteTypes { get; set; }
+    public List<EcoWasteType> WasteTypes { private get; set; }
     
     public EcoPoint Location { get; set; }
     

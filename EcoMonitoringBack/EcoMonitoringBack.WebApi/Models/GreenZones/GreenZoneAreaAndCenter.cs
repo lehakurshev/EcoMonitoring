@@ -4,6 +4,6 @@ namespace EcoMonitoringBack.Models.GreenZones;
 
 public class GreenZoneAreaAndCenter
 {
-    public Point Center { get; set; }
-    public double AreaHectares { get; set; }
+    public Point Center { get; init; }
+    public double AreaHectares { get; init; }
 }

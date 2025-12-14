@@ -28,8 +28,7 @@ public class GreenZoneServiceService : IGreenZoneService
             AreaHectares = Math.Round(areaHectares, 4)
         };
     }    
-
-        
+    
     public bool IsValidPolygon(List<Point> coordinates)
     {
         return coordinates.Count >= 4;
@@ -39,9 +38,9 @@ public class GreenZoneServiceService : IGreenZoneService
     {
 
         double area = 0;
-        int n = coordinates.Count;
+        var n = coordinates.Count;
 
-        for (int i = 0; i < n; i++)
+        for (var i = 0; i < n; i++)
         {
             var current = coordinates[i];
             var next = coordinates[(i + 1) % n];
@@ -59,7 +58,7 @@ public class GreenZoneServiceService : IGreenZoneService
         return Math.Abs(area);
     }
 
-    private Point CalculateCentroid(List<Point> coordinates)
+    private static Point CalculateCentroid(List<Point> coordinates)
     {
         var closedCoordinates = new List<Point>(coordinates);
         if (!closedCoordinates[0].Equals(closedCoordinates[^1]))
@@ -71,29 +70,29 @@ public class GreenZoneServiceService : IGreenZoneService
         double centroidX = 0;
         double centroidY = 0;
 
-        int n = closedCoordinates.Count - 1;
+        var n = closedCoordinates.Count - 1;
 
-        for (int i = 0; i < n; i++)
+        for (var i = 0; i < n; i++)
         {
-            double x0 = closedCoordinates[i].Longitude;
-            double y0 = closedCoordinates[i].Latitude;
-            double x1 = closedCoordinates[i + 1].Longitude;
-            double y1 = closedCoordinates[i + 1].Latitude;
+            var x0 = closedCoordinates[i].Longitude;
+            var y0 = closedCoordinates[i].Latitude;
+            var x1 = closedCoordinates[i + 1].Longitude;
+            var y1 = closedCoordinates[i + 1].Latitude;
 
-            double a = x0 * y1 - x1 * y0;
+            var a = x0 * y1 - x1 * y0;
             signedArea += a;
             centroidX += (x0 + x1) * a;
             centroidY += (y0 + y1) * a;
         }
 
         signedArea *= 0.5;
-        centroidX /= (6 * signedArea);
-        centroidY /= (6 * signedArea);
+        centroidX /= 6 * signedArea;
+        centroidY /= 6 * signedArea;
 
         return new Point(centroidY, centroidX);
     }
 
-    private double ToRadians(double degrees)
+    private static double ToRadians(double degrees)
     {
         return degrees * Math.PI / 180.0;
     }

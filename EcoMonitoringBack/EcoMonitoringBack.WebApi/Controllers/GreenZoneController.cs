@@ -7,17 +7,9 @@ namespace EcoMonitoringBack.Controllers;
 
 [ApiController]
 [Route("api/greenzones")]
-public class GreenZoneController : ControllerBase
+public class GreenZoneController(IGreenZoneService geoAnalysisService, IRepositoryGreenZones repositoryGreenZones)
+    : ControllerBase
 {
-    private readonly IGreenZoneService _geoAnalysisService;
-    private readonly IRepositoryGreenZones _repositoryGreenZones;
-
-    public GreenZoneController(IGreenZoneService geoAnalysisService, IRepositoryGreenZones repositoryGreenZones)
-    {
-        _geoAnalysisService = geoAnalysisService;
-        _repositoryGreenZones = repositoryGreenZones;
-    }
-
     [HttpGet("area")]
     public async Task<ActionResult<List<EcoGreenZone>>> GetByArea(
         [FromQuery] double minLat,
@@ -27,7 +19,7 @@ public class GreenZoneController : ControllerBase
     {
         try
         {
-            var greenZones = (await _repositoryGreenZones.GetByAreaAsync(minLat, maxLat, minLon, maxLon))?
+            var greenZones = (await repositoryGreenZones.GetByAreaAsync(minLat, maxLat, minLon, maxLon))?
                 .Select(x => x.ToEcoGreenZone())
                 .ToList();
             return Ok(greenZones);
@@ -48,17 +40,14 @@ public class GreenZoneController : ControllerBase
                 return BadRequest(new { error = "Список полигонов не может быть пустым" });
             }
 
-            var results = new List<EcoGreenZoneAreaAndCenter>();
-
-            foreach (var greenZoneData in greenZoneDates)
-            {
-                var domainModel = greenZoneData.ToGreenZoneData();
-                if (_geoAnalysisService.IsValidPolygon(domainModel.Coordinates))
-                {
-                    var result = _geoAnalysisService.CalculatePolygonAreaAndCenter(domainModel);
-                    results.Add(result.ToEcoGreenZoneAreaAndCenter());
-                }
-            }
+            var results = (from greenZoneData
+                in greenZoneDates
+                select greenZoneData.ToGreenZoneData()
+                into domainModel
+                where geoAnalysisService.IsValidPolygon(domainModel.Coordinates)
+                select geoAnalysisService.CalculatePolygonAreaAndCenter(domainModel)
+                into result
+                select result.ToEcoGreenZoneAreaAndCenter()).ToList();
 
             return Ok(results);
         }

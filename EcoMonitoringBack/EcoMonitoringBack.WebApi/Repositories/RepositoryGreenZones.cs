@@ -4,14 +4,9 @@ using MongoDB.Driver;
 
 namespace EcoMonitoringBack.Repositories;
 
-public class RepositoryGreenZones : IRepositoryGreenZones
+public class RepositoryGreenZones(IMongoDatabase database) : IRepositoryGreenZones
 {
-    private readonly IMongoCollection<GreenZoneMongo> _greenZones;
-
-    public RepositoryGreenZones(IMongoClient client, IMongoDatabase database)
-    {
-        _greenZones = database.GetCollection<GreenZoneMongo>("greenZones");
-    }
+    private readonly IMongoCollection<GreenZoneMongo> _greenZones = database.GetCollection<GreenZoneMongo>("greenZones");
 
     public async Task<List<GreenZoneMongo>> GetByAreaAsync(double minLat, double maxLat, double minLon, double maxLon)
     {
