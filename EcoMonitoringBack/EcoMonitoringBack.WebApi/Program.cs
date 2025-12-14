@@ -38,8 +38,9 @@ builder.Services.AddScoped(serviceProvider =>
 
 //builder.Services.AddApplication();
 //builder.Services.AddWebServices();
-builder.Services.AddInjection();
-builder.Services.AddControllers();
+builder.Services
+    .AddInjection()
+    .AddControllers();
 
 builder.Services.AddHttpContextAccessor();
 
@@ -70,5 +71,5 @@ app.UseHttpsRedirection();
 app.UseCors("AllowFrontend");
 app.UseRouting();
 app.MapControllers();
-app.MakeContainersMigration();
+_ = app.MakeContainersMigration();
 app.Run();

@@ -4,15 +4,8 @@ using EcoMonitoringBack.Models.Container;
 
 namespace EcoMonitoringBack.Services;
 
-public class ServiceReviews : IServiceReviews
+public class ServiceReviews(IRepositoryReviews repositoryReviews) : IServiceReviews
 {
-    private readonly IRepositoryReviews _repositoryReviews;
-
-    public ServiceReviews(IRepositoryReviews repositoryReviews)
-    {
-        _repositoryReviews = repositoryReviews;
-    }
-
     public async Task<List<ContainerReview>> GetReviewsByContainerIdAsync(string containerId)
     {
         if (string.IsNullOrWhiteSpace(containerId))
@@ -20,7 +13,7 @@ public class ServiceReviews : IServiceReviews
             throw new ArgumentException("ID контейнера не может быть пустым", nameof(containerId));
         }
 
-        return await _repositoryReviews.GetReviewsByContainerIdAsync(containerId);
+        return await repositoryReviews.GetReviewsByContainerIdAsync(containerId);
     }
 
     public async Task<ContainerReview> CreateReviewAsync(string containerId, CreateReviewRequest request)
@@ -32,12 +25,12 @@ public class ServiceReviews : IServiceReviews
 
         if (string.IsNullOrWhiteSpace(request.AuthorName))
         {
-            throw new ArgumentException("Имя автора не может быть пустым", nameof(request.AuthorName));
+            throw new ArgumentException("Имя автора не может быть пустым", nameof(request));
         }
 
-        if (request.Rating < 1 || request.Rating > 5)
+        if (request.Rating is < 1 or > 5)
         {
-            throw new ArgumentException("Рейтинг должен быть от 1 до 5", nameof(request.Rating));
+            throw new ArgumentException("Рейтинг должен быть от 1 до 5", nameof(request));
         }
 
         var review = new ContainerReview
@@ -49,6 +42,6 @@ public class ServiceReviews : IServiceReviews
             CreatedAt = DateTime.UtcNow
         };
 
-        return await _repositoryReviews.CreateReviewAsync(review);
+        return await repositoryReviews.CreateReviewAsync(review);
     }
 }

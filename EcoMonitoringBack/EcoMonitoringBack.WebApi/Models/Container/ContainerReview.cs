@@ -10,10 +10,10 @@ public class ContainerReview
     public string Id { get; set; } = string.Empty;
     
     [BsonRepresentation(BsonType.ObjectId)]
-    public string ContainerId { get; set; } = string.Empty;
+    public string ContainerId { get; init; } = string.Empty;
     
-    public string AuthorName { get; set; } = string.Empty;
-    public int Rating { get; set; }
-    public string Comment { get; set; } = string.Empty;
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public string AuthorName { get; init; } = string.Empty;
+    public int Rating { get; init; }
+    public string Comment { get; init; } = string.Empty;
+    public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
 }
