@@ -4,28 +4,12 @@ using MongoDB.Driver;
 
 namespace EcoMonitoringBack.Repositories;
 
-public class RepositoryContainerMigration : IRepositoryContainerMigration
+public class RepositoryContainerMigration(IMongoDatabase database) : IRepositoryContainerMigration
 {
-    private readonly IMongoClient _client;
-    private readonly IMongoDatabase _database;
-
-    public RepositoryContainerMigration(IMongoClient client, IMongoDatabase database)
-    {
-        _database = database;
-        _client = client;
-    }
-
     public async Task MakeMigrationAsync(List<ContainerInfo> statusMigration)
     {
-        var containers = _database.GetCollection<ContainerInfo>("containers"); 
-    
-        try
-        {
-            await containers.InsertManyAsync(statusMigration);
-        }
-        catch (Exception ex)
-        {
-            throw;
-        }
+        var containers = database.GetCollection<ContainerInfo>("containers"); 
+        
+        await containers.InsertManyAsync(statusMigration);
     }
 }

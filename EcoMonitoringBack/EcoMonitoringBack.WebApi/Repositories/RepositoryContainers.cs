@@ -6,19 +6,10 @@ using MongoDB.Driver.GeoJsonObjectModel;
 
 namespace EcoMonitoringBack.Repositories;
 
-public class RepositoryContainers : IRepositoryContainers
+public class RepositoryContainers(IMongoDatabase database) : IRepositoryContainers
 {
-    private readonly IMongoClient _client;
-    private readonly IMongoDatabase _database;
-    private readonly IMongoCollection<ContainerInfo> _containers;
+    private readonly IMongoCollection<ContainerInfo> _containers = database.GetCollection<ContainerInfo>("containers");
 
-    public RepositoryContainers(IMongoClient client, IMongoDatabase database)
-    {
-        _database = database;
-        _client = client;
-        _containers = _database.GetCollection<ContainerInfo>("containers");
-    }
-    
     public async Task<bool> IsHaveDbContainersAsync()
     {
         var filter = Builders<ContainerInfo>.Filter.Empty;
@@ -98,6 +89,4 @@ public class RepositoryContainers : IRepositoryContainers
         var foundContainers = await _containers.FindAsync(filter);
         return await foundContainers.ToListAsync();
     }
-    
-    
 }

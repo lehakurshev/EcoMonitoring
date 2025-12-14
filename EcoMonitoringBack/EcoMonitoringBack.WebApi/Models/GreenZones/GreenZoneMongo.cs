@@ -8,19 +8,19 @@ public class GreenZoneMongo
 {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
-    public string? Id { get; set; }
+    public string Id { get; set; }
 
     [BsonElement("name")]
-    public string? Name { get; set; }
+    public string Name { get; set; }
 
     [BsonElement("type")]
     public string Type { get; set; } = string.Empty;
 
     [BsonElement("subtype")]
-    public string? Subtype { get; set; }
+    public string Subtype { get; set; }
 
     [BsonElement("coordinates")]
-    public List<Point> Coordinates { get; set; } = new();
+    public List<Point> Coordinates { get; set; } = [];
 
     [BsonElement("properties")]
     public Dictionary<string, object> Properties { get; set; } = new();

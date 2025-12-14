@@ -10,7 +10,7 @@ public class ContainerInfo
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
     public string Id { get; set; } = string.Empty;
-    public List<WasteType> WasteTypes { get; set; } = new List<WasteType>();
+    public List<WasteType> WasteTypes { get; set; }
     
     [BsonElement("location")]
     public GeoJsonPoint<GeoJson2DCoordinates> Location { get; set; }
@@ -18,19 +18,14 @@ public class ContainerInfo
     
     public ContainerInfo()
     {
-        WasteTypes = new List<WasteType>();
+        WasteTypes = [];
     }
     
     public ContainerInfo(List<WasteType> wasteTypes, Point coordinates, Address address)
     {
-        this.WasteTypes = new List<WasteType>(wasteTypes);
+        WasteTypes = new List<WasteType>(wasteTypes);
         Location = new GeoJsonPoint<GeoJson2DCoordinates>(
             new GeoJson2DCoordinates(coordinates.Longitude, coordinates.Latitude));
         Address = address;
-    }
-
-    public void SetWasteTypes(List<WasteType> wasteTypes)
-    {
-        WasteTypes = wasteTypes;
     }
 }
