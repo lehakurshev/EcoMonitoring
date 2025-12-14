@@ -7,18 +7,11 @@ using System.Text.Json;
 
 namespace EcoMonitoringBack.Services;
 
-public class ServiceMigrationContainer : IServiceMigrationContainer
+public class ServiceMigrationContainer(
+    IRepositoryContainerMigration repositoryContainerMigration,
+    IRepositoryGreenZones repositoryGreenZones)
+    : IServiceMigrationContainer
 {
-    private readonly IRepositoryContainerMigration _repositoryContainerMigration;
-    private readonly IRepositoryGreenZones _repositoryGreenZones;
-    
-    public ServiceMigrationContainer(IRepositoryContainerMigration repositoryContainerMigration, IRepositoryGreenZones repositoryGreenZones)
-    {
-        _repositoryContainerMigration = repositoryContainerMigration;
-        _repositoryGreenZones = repositoryGreenZones;
-    }
-
-
     public async Task StartMigrationAsync(IFormFile file)
     {
         if (file == null || file.Length == 0)
@@ -26,16 +19,16 @@ public class ServiceMigrationContainer : IServiceMigrationContainer
             throw new ArgumentException("File is required");
         }
         ExcelPackage.License.SetNonCommercialOrganization("My Noncommercial organization");
-        string tempPath = Path.Combine( Guid.NewGuid().ToString() + ".xlsx");
+        string tempPath = Path.Combine( Guid.NewGuid() + ".xlsx");
 
         try
         {
-            using (var stream = new FileStream(tempPath, FileMode.Create))
+            await using (var stream = new FileStream(tempPath, FileMode.Create))
             {
                 await file.CopyToAsync(stream);
             }
             var containerInfo = GetContainersInfoFromTable(tempPath);
-            await _repositoryContainerMigration.MakeMigrationAsync(containerInfo);
+            await repositoryContainerMigration.MakeMigrationAsync(containerInfo);
         }
         finally
         {
@@ -46,7 +39,7 @@ public class ServiceMigrationContainer : IServiceMigrationContainer
         }
     }
 
-    private List<ContainerInfo> GetContainersInfoFromTable(string tempPath)
+    private static List<ContainerInfo> GetContainersInfoFromTable(string tempPath)
     {
         
         using var package = new ExcelPackage(new FileInfo(tempPath));
@@ -59,7 +52,7 @@ public class ServiceMigrationContainer : IServiceMigrationContainer
         if (worksheet.Dimension == null)
             throw new InvalidDataException("Рабочий лист пуст");
         var result = new List<ContainerInfo>();
-        for (int row = 8; row <= worksheet.Dimension.Rows; row++)
+        for (var row = 8; row <= worksheet.Dimension.Rows; row++)
         {
             
             var settlement = worksheet.Cells[row, 29].Value?.ToString() ?? "";
@@ -70,7 +63,7 @@ public class ServiceMigrationContainer : IServiceMigrationContainer
             if (settlement == "" || district == "" || street == "" || house == "")
                 continue;
 
-            double latitude = 0.0;
+            double latitude;
             var latValue = worksheet.Cells[row, 33].Value;
             if (latValue is double latDouble)
             {
@@ -90,7 +83,7 @@ public class ServiceMigrationContainer : IServiceMigrationContainer
                 throw new InvalidOperationException("Широта отсутствует");
             }
 
-            double longitude = 0.0;
+            double longitude;
             var lonValue = worksheet.Cells[row, 34].Value;
             if (lonValue is double lonDouble)
             {
@@ -112,7 +105,7 @@ public class ServiceMigrationContainer : IServiceMigrationContainer
 
             var address = new Address(settlement, district, street, house);
             var coordinates = new Point(latitude, longitude);
-            result.Add(new ContainerInfo(new List<WasteType>(), coordinates, address));
+            result.Add(new ContainerInfo([], coordinates, address));
         }
 
         return result;
@@ -127,15 +120,7 @@ public class ServiceMigrationContainer : IServiceMigrationContainer
             "export.geojson"
         };
 
-        string? geojsonPath = null;
-        foreach (var path in possiblePaths)
-        {
-            if (File.Exists(path))
-            {
-                geojsonPath = path;
-                break;
-            }
-        }
+        var geojsonPath = possiblePaths.FirstOrDefault(File.Exists);
 
         if (geojsonPath == null)
         {
@@ -164,14 +149,11 @@ public class ServiceMigrationContainer : IServiceMigrationContainer
             if (geometryType != "Polygon") continue;
 
             var coordinates = geometry.GetProperty("coordinates")[0];
-            var points = new List<Point>();
-
-            foreach (var coord in coordinates.EnumerateArray())
-            {
-                var lon = coord[0].GetDouble();
-                var lat = coord[1].GetDouble();
-                points.Add(new Point(lat, lon));
-            }
+            var points = (from coord
+                in coordinates.EnumerateArray()
+                let lon = coord[0].GetDouble()
+                let lat = coord[1].GetDouble()
+                select new Point(lat, lon)).ToList();
 
             if (points.Count < 4) continue;
 
@@ -187,15 +169,15 @@ public class ServiceMigrationContainer : IServiceMigrationContainer
             greenZones.Add(greenZone);
         }
 
-        await _repositoryGreenZones.CreateManyAsync(greenZones);
+        await repositoryGreenZones.CreateManyAsync(greenZones);
     }
 
-    private string? GetPropertyValue(JsonElement properties, string key)
+    private static string GetPropertyValue(JsonElement properties, string key)
     {
         return properties.TryGetProperty(key, out var value) ? value.GetString() : null;
     }
 
-    private Dictionary<string, object> ExtractProperties(JsonElement properties)
+    private static Dictionary<string, object> ExtractProperties(JsonElement properties)
     {
         var dict = new Dictionary<string, object>();
         foreach (var prop in properties.EnumerateObject())

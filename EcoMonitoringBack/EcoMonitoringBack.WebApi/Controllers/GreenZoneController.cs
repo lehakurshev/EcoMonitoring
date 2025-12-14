@@ -9,17 +9,9 @@ namespace EcoMonitoringBack.Controllers;
 
 [ApiController]
 [Route("api/greenzones")]
-public class GreenZoneController : ControllerBase
+public class GreenZoneController(IGreenZoneService geoAnalysisService, IRepositoryGreenZones repositoryGreenZones)
+    : ControllerBase
 {
-    private readonly IGreenZoneService _geoAnalysisService;
-    private readonly IRepositoryGreenZones _repositoryGreenZones;
-
-    public GreenZoneController(IGreenZoneService geoAnalysisService, IRepositoryGreenZones repositoryGreenZones)
-    {
-        _geoAnalysisService = geoAnalysisService;
-        _repositoryGreenZones = repositoryGreenZones;
-    }
-
     [HttpGet("area")]
     public async Task<ActionResult<List<EcoGreenZone>>> GetByArea(
         [FromQuery] double minLat,
@@ -29,33 +21,8 @@ public class GreenZoneController : ControllerBase
     {
         try
         {
-            var greenZones = (await _repositoryGreenZones.GetByAreaAsync(minLat, maxLat, minLon, maxLon))?
+            var greenZones = (await repositoryGreenZones.GetByAreaAsync(minLat, maxLat, minLon, maxLon))?
                 .Select(x => x.ToEcoGreenZone())
-                .ToList();
-            return Ok(greenZones);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { error = $"Ошибка при получении зеленых зон: {ex.Message}" });
-        }
-    }
-
-    [HttpGet("area/points")]
-    public async Task<ActionResult<List<EcoGreenZoneAreaAndCenter>>> GetByAreaPoints(
-        [FromQuery] double minLat,
-        [FromQuery] double maxLat,
-        [FromQuery] double minLon,
-        [FromQuery] double maxLon)
-    {
-        var currentSize = Infrastructure.GetByAreaResizedArea(minLat, maxLat, minLon, maxLon, 3);
-        try
-        {
-            var greenZones = (await _repositoryGreenZones.GetByAreaAsync(currentSize.Item1,
-                    currentSize.Item2, currentSize.Item3, currentSize.Item4))?
-                .Select(x => x.Coordinates)
-                .Where(points => _geoAnalysisService.IsValidPolygon(points))
-                .Select(points => _geoAnalysisService.CalculatePolygonAreaAndCenter(points))
-                .Select(dto => dto.ToEcoGreenZoneAreaAndCenter())
                 .ToList();
             return Ok(greenZones);
         }
@@ -75,17 +42,14 @@ public class GreenZoneController : ControllerBase
                 return BadRequest(new { error = "Список полигонов не может быть пустым" });
             }
 
-            var results = new List<EcoGreenZoneAreaAndCenter>();
-
-            foreach (var greenZoneData in greenZoneDates)
-            {
-                var domainModel = greenZoneData.ToGreenZoneData().Coordinates;
-                if (_geoAnalysisService.IsValidPolygon(domainModel))
-                {
-                    var result = _geoAnalysisService.CalculatePolygonAreaAndCenter(domainModel);
-                    results.Add(result.ToEcoGreenZoneAreaAndCenter());
-                }
-            }
+            var results = (from greenZoneData
+                in greenZoneDates
+                select greenZoneData.ToGreenZoneData()
+                into domainModel
+                where geoAnalysisService.IsValidPolygon(domainModel.Coordinates)
+                select geoAnalysisService.CalculatePolygonAreaAndCenter(domainModel)
+                into result
+                select result.ToEcoGreenZoneAreaAndCenter()).ToList();
 
             return Ok(results);
         }
@@ -94,5 +58,4 @@ public class GreenZoneController : ControllerBase
             return StatusCode(500, new { error = $"Ошибка при пакетном анализе полигонов: {ex.Message}" });
         }
     }
-
 }

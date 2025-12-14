@@ -4,14 +4,9 @@ using MongoDB.Driver;
 
 namespace EcoMonitoringBack.Repositories;
 
-public class RepositoryReviews : IRepositoryReviews
+public class RepositoryReviews(IMongoDatabase database) : IRepositoryReviews
 {
-    private readonly IMongoCollection<ContainerReview> _reviews;
-
-    public RepositoryReviews(IMongoDatabase database)
-    {
-        _reviews = database.GetCollection<ContainerReview>("containerReviews");
-    }
+    private readonly IMongoCollection<ContainerReview> _reviews = database.GetCollection<ContainerReview>("containerReviews");
 
     public async Task<List<ContainerReview>> GetReviewsByContainerIdAsync(string containerId)
     {

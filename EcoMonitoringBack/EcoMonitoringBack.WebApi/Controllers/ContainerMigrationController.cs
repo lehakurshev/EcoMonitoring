@@ -5,20 +5,14 @@ namespace EcoMonitoringBack.Controllers;
 
 [ApiController]
 [Route("api/migration")]
-public class ContainerMigrationController : ControllerBase
+public class ContainerMigrationController(IServiceMigrationContainer serviceMigrationContainer) : ControllerBase
 {
-    private readonly IServiceMigrationContainer _serviceMigrationContainer;
-    public ContainerMigrationController(IServiceMigrationContainer serviceMigrationContainer)
-    {
-        _serviceMigrationContainer = serviceMigrationContainer;
-    }
-
     [HttpPost("greenzones")]
     public async Task<ActionResult> MigrateGreenZones()
     {
         try
         {
-            await _serviceMigrationContainer.MigrateGreenZonesAsync();
+            await serviceMigrationContainer.MigrateGreenZonesAsync();
             return Ok(new { message = "Green zones migration completed successfully" });
         }
         catch (FileNotFoundException ex)
@@ -36,7 +30,7 @@ public class ContainerMigrationController : ControllerBase
     {
         try
         {
-            await _serviceMigrationContainer.StartMigrationAsync(file);
+            await serviceMigrationContainer.StartMigrationAsync(file);
             return Ok();
         }
         catch (ArgumentException ex)
@@ -56,5 +50,4 @@ public class ContainerMigrationController : ControllerBase
             return StatusCode(500, new { error = $"Хз чо не так: {ex.Message}" });
         }
     }
-    
 }

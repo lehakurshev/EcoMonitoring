@@ -8,23 +8,6 @@ namespace EcoMonitoringBack.Mappings;
 
 public static class ToContractMappings
 {
-    public static EcoAddress ToEcoAddress(this Address address)
-    {
-        return new EcoAddress(address.Settlement, address.District, address.Street, address.House);
-    }
-    
-    public static EcoPoint ToEcoPoint(this Point point)
-    {
-        return new EcoPoint(point.Latitude, point.Longitude);
-    }
-    
-    public static EcoPoint ToEcoPoint(this GeoJsonPoint<GeoJson2DCoordinates> point)
-    {
-        var latitude = point.Coordinates.Y;
-        var longitude = point.Coordinates.X;
-        return new EcoPoint(latitude, longitude);
-    }
-    
     public static EcoContainerInfo ToEcoContainerInfo(this ContainerInfo info)
     {
         return new EcoContainerInfo
@@ -73,5 +56,22 @@ public static class ToContractMappings
                 .ToList(),
             Properties = zone.Properties
         };
+    }
+    
+    private static EcoAddress ToEcoAddress(this Address address)
+    {
+        return new EcoAddress(address.Settlement, address.District, address.Street, address.House);
+    }
+
+    private static EcoPoint ToEcoPoint(this Point point)
+    {
+        return new EcoPoint(point.Latitude, point.Longitude);
+    }
+
+    private static EcoPoint ToEcoPoint(this GeoJsonPoint<GeoJson2DCoordinates> point)
+    {
+        var latitude = point.Coordinates.Y;
+        var longitude = point.Coordinates.X;
+        return new EcoPoint(latitude, longitude);
     }
 }
