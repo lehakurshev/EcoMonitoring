@@ -1,5 +1,4 @@
-import Map, {Marker} from 'react-map-gl/maplibre';
-import type {ViewState, MapEvent, MapLayerMouseEvent} from 'react-map-gl/maplibre';
+import type {ViewState, MapEvent} from 'react-map-gl/maplibre';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import type {
     ContainerInfo,
@@ -8,13 +7,10 @@ import type {
     AirQualityData,
     GreenZonePoint
 } from '../../../../types.ts';
-import {ClusterLayer} from '../ClusterLayer/ClusterLayer.tsx';
 import './MapView.css';
-import {ContainerSidebar} from '../../../Containers/components/ContainerSidebar/ContainerSidebar.tsx';
-import {AddContainerSidebar} from '../../../Containers/components/AddContainerSidebar/AddContainerSidebar.tsx';
-import {GreenZoneLayer} from '../../../GreenZones/components/GreenZoneLayer/GreenZoneLayer.tsx';
-import {AirQualityLayer} from '../../../AirQuality/components/AirQualityLayer/AirQualityLayer.tsx';
-import {AirQualitySidebar} from '../../../AirQuality/components/AirQualitySidebar/AirQualitySidebar.tsx';
+import {Sidebar} from './Sidebar';
+import {ControlButtons} from './ControlButtons';
+import {MapLayers} from './MapLayers';
 
 interface MapViewProps {
     viewState: ViewState;
@@ -69,121 +65,49 @@ export function MapView({
                             onSubmitContainer,
                             onCancelAddContainer
                         }: MapViewProps) {
-    const handleMapClick = (event: MapLayerMouseEvent) => {
-        if (addingContainer && event.lngLat) {
-            onMapClick(event.lngLat.lat, event.lngLat.lng);
-        }
-    };
     return (
         <>
-            {newContainerPosition ? (
-                <AddContainerSidebar
-                    latitude={newContainerPosition.lat}
-                    longitude={newContainerPosition.lng}
-                    onSubmit={onSubmitContainer}
-                    onCancel={onCancelAddContainer}
-                />
-            ) : showAirQuality ? (
-                <AirQualitySidebar
-                    data={selectedAirQuality}
-                    onClose={() => onAirQualitySelect(null)}
-                />
-            ) : (
-                <ContainerSidebar
-                    container={selectedContainer}
-                    onClose={() => onContainerSelect(null)}
-                />
-            )}
+            <Sidebar
+                newContainerPosition={newContainerPosition}
+                selectedAirQuality={selectedAirQuality}
+                selectedContainer={selectedContainer}
+                onSubmitContainer={onSubmitContainer}
+                onCancelAddContainer={onCancelAddContainer}
+                onAirQualitySelect={onAirQualitySelect}
+                onContainerSelect={onContainerSelect}
+            />
 
-            <button
-                className={`toggle-containers-button ${showContainers ? 'active' : ''}`}
-                onClick={onToggleContainers}
-                title={showContainers ? 'Скрыть контейнеры' : 'Показать контейнеры'}
-            >
-                <span>🗑️</span>
-            </button>
-
-            <button
-                className={`toggle-greenzones-button ${showGreenZones ? 'active' : ''}`}
-                onClick={onToggleGreenZones}
-                title={showGreenZones ? 'Скрыть зеленые зоны' : 'Показать зеленые зоны'}
-            >
-                <span>🌳</span>
-            </button>
-
-            <button
-                className={`toggle-airquality-button ${showAirQuality ? 'active' : ''}`}
-                onClick={onToggleAirQuality}
-                title={showAirQuality ? 'Скрыть качество воздуха' : 'Показать качество воздуха'}
-            >
-                <span>🌫️</span>
-            </button>
-
-            {showContainers && (
-                <button
-                    className={`add-container-button ${addingContainer ? 'active' : ''}`}
-                    onClick={onToggleAddMode}
-                    title={addingContainer ? 'Отменить добавление' : 'Добавить контейнер'}
-                >
-                    <span>➕</span>
-                </button>
-            )}
-
-            {addingContainer && !newContainerPosition && (
-                <div className="add-container-hint">
-                    Кликните на карту, чтобы выбрать место для контейнера
-                </div>
-            )}
+            <ControlButtons
+                showContainers={showContainers}
+                showGreenZones={showGreenZones}
+                showAirQuality={showAirQuality}
+                addingContainer={addingContainer}
+                onToggleContainers={onToggleContainers}
+                onToggleGreenZones={onToggleGreenZones}
+                onToggleAirQuality={onToggleAirQuality}
+                onToggleAddMode={onToggleAddMode}
+            />
 
             <div className={`map-wrapper ${addingContainer ? 'adding' : ''}`}>
-                <Map
-                    {...viewState}
+                <MapLayers
+                    viewState={viewState}
+                    bounds={bounds}
+                    containers={containers}
+                    greenZonePoints={greenZonePoints}
+                    airQualityData={airQualityData}
+                    showContainers={showContainers}
+                    showGreenZones={showGreenZones}
+                    showAirQuality={showAirQuality}
+                    selectedContainer={selectedContainer}
+                    onViewStateChange={onViewStateChange}
+                    onContainerSelect={onContainerSelect}
+                    onAirQualitySelect={onAirQualitySelect}
+                    addingContainer={addingContainer}
+                    newContainerPosition={newContainerPosition}
+                    onMapClick={onMapClick}
                     onMove={onMove}
                     onMoveEnd={onMoveEnd}
-                    onLoad={onMoveEnd}
-                    onClick={handleMapClick}
-                    cursor={addingContainer ? 'crosshair' : undefined}
-                    mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
-                >
-                    {showGreenZones && <GreenZoneLayer greenZones={greenZonePoints}/>}
-                    {showAirQuality && (
-                        <AirQualityLayer
-                            airQualityData={airQualityData}
-                            onDistrictClick={onAirQualitySelect}
-                        />
-                    )}
-
-                    {showContainers && (
-                        <ClusterLayer
-                            containers={containers}
-                            bounds={bounds}
-                            zoom={viewState.zoom}
-                            viewState={viewState}
-                            selectedContainer={selectedContainer}
-                            onViewStateChange={onViewStateChange}
-                            onContainerClick={onContainerSelect}
-                        />
-                    )}
-
-                    {newContainerPosition && (
-                        <Marker
-                            longitude={newContainerPosition.lng}
-                            latitude={newContainerPosition.lat}
-                            anchor="center"
-                            offset={[5, 35]}
-                        >
-                            <svg
-                                width="24"
-                                height="35"
-                                viewBox="0 0 24 35"
-                                className="new-marker"
-                            >
-                                <path
-                                    d="M12 0C7.58 0 4 3.58 4 8c0 7 8 17 8 17s8-10 8-17c0-4.42-3.58-8-8-8zm0 11c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"/>
-                            </svg>
-                        </Marker>
-                    )}
-                </Map>
+                />
             </div>
         </>
     );
