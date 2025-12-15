@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import type { ViewState, MapEvent } from 'react-map-gl/maplibre';
 import './App.css';
-import { MapView } from './components';
-import { useMapBounds, useContainers } from './hooks';
+import { MapView } from './features/Map/components/MapView/MapView.tsx';
+import { useMapBounds } from './features/Map/hooks/useMapBounds';
+import { useContainers } from './features/Containers/hooks/useContainers';
 import { createContainer } from './api';
 import type { ContainerInfo, CreateContainerRequest, AirQualityData } from './types';
 import { mockAirQualityData } from './mockAirQualityData';
-import { useGreenZoneDataHeatMap } from './hooks';
+import { useGreenZoneDataHeatMap } from './features/GreenZones/hooks/useGreenZoneDataHeatMap';
 
 function App() {
     const [viewState, setViewState] = useState<ViewState>({
