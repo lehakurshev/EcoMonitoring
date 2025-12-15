@@ -1,6 +1,6 @@
 import type { ViewState } from 'react-map-gl/maplibre';
 import type { ContainerInfo, Bounds } from '../../types';
-import { useSupercluster } from '../../hooks/useSupercluster';
+import { useSupercluster } from '../../hooks';
 import { ClusterMarker } from '../ClusterMarker/ClusterMarker';
 import { ContainerMarker } from '../ContainerMarker/ContainerMarker';
 
@@ -23,10 +23,10 @@ export function ClusterLayer({
     onViewStateChange,
     onContainerClick
 }: ClusterLayerProps) {
-    const clusterBounds = bounds 
-        ? [bounds.sw[0], bounds.sw[1], bounds.ne[0], bounds.ne[1]] as [number, number, number, number] 
+    const clusterBounds = bounds
+        ? [bounds.sw[0], bounds.sw[1], bounds.ne[0], bounds.ne[1]] as [number, number, number, number]
         : null;
-    
+
     const { clusters, supercluster } = useSupercluster({
         containers,
         bounds: clusterBounds,
@@ -37,7 +37,7 @@ export function ClusterLayer({
         <>
             {clusters.map((cluster) => {
                 const [lng, lat] = cluster.geometry.coordinates;
-                const { cluster: isCluster, point_count: pointCount } = cluster.properties;
+                const { cluster: isCluster, point_count: pointCount = 0 } = cluster.properties;
 
                 if (isCluster) {
                     return (

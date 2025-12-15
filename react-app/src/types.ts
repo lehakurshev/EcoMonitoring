@@ -63,15 +63,6 @@ export interface Point {
     longitude: number;
 }
 
-export interface GreenZone {
-    id: string;
-    name?: string;
-    type: string;
-    subtype?: string;
-    coordinates: Point[];
-    properties: Record<string, any>;
-}
-
 export interface GreenZonePoint {
     radius: number;
     coordinates: Point;
@@ -105,7 +96,24 @@ export function getWasteTypeName(wasteType: WasteType): string {
 }
 
 export function getContainerColor(_wasteTypes: WasteType[]): string {
-    return '#757575';
+    if (_wasteTypes.length === 0) {
+        return '#757575'; // Default color for no waste types
+    }
+
+    const wasteTypeColors: Record<WasteType, string> = {
+        [WasteType.Hazardous]: '#D32F2F',
+        [WasteType.Batteries]: '#F57C00',
+        [WasteType.Electronics]: '#1976D2',
+        [WasteType.Glass]: '#00897B',
+        [WasteType.Plastic]: '#F9A825',
+        [WasteType.Paper]: '#0288D1',
+        [WasteType.Metal]: '#455A64',
+        [WasteType.Clothes]: '#7B1FA2',
+        [WasteType.Organic]: '#689F38',
+    };
+
+    // Return the color for the first waste type in the array, or default if not found
+    return wasteTypeColors[_wasteTypes[0]] || '#757575';
 }
 
 export function getWasteTypeColor(wasteType: WasteType): string {

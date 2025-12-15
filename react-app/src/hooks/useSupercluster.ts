@@ -3,7 +3,13 @@ import Supercluster from 'supercluster';
 import type { ContainerInfo } from '../types';
 
 type BBox = [number, number, number, number];
-type GeoJsonProperties = Record<string, any>;
+
+interface ContainerProperties {
+    cluster: boolean;
+    containerId: string;
+    container: ContainerInfo;
+    point_count?: number; // Added to support cluster points
+}
 
 interface UseSuperclusterProps {
     containers: ContainerInfo[];
@@ -13,7 +19,7 @@ interface UseSuperclusterProps {
 
 export function useSupercluster({ containers, bounds, zoom }: UseSuperclusterProps) {
     const supercluster = useMemo(() => {
-        const cluster = new Supercluster<GeoJsonProperties>({
+        const cluster = new Supercluster<ContainerProperties>({
             radius: 120,
             maxZoom: 18,
             minZoom: 0,

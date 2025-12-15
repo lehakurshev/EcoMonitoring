@@ -2,7 +2,17 @@ import {GreenZonePoint} from "../../types.ts";
 
 export { GreenZoneLayer } from './GreenZoneLayer';
 
-export function createPointCloud(zone: GreenZonePoint, config: any) {
+export interface LayerConfig {
+    id: string;
+    minRadius: number;
+    maxRadius: number;
+    baseRadius: number;
+    heatmapRadius: number;
+    colorIntensity: number;
+    pointDensity: number;
+}
+
+export function createPointCloud(zone: GreenZonePoint, config: LayerConfig) {
     const centerLng = zone.coordinates.longitude || 0;
     const centerLat = zone.coordinates.latitude || 0;
     const radius = zone.radius || config.baseRadius;

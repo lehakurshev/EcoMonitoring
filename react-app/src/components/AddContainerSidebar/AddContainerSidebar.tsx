@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import type { CreateContainerRequest } from '../../types';
 import { WasteType, getWasteTypeName } from '../../types';
+import '../Sidebar.css';
 import './AddContainerSidebar.css';
 
 interface AddContainerSidebarProps {
@@ -19,7 +20,7 @@ export function AddContainerSidebar({ latitude, longitude, onSubmit, onCancel }:
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const allWasteTypes = Object.values(WasteType).filter(v => typeof v === 'number') as number[];
+    const allWasteTypes = Object.values(WasteType) as number[];
 
     const toggleWasteType = (type: number) => {
         if (wasteTypes.includes(type)) {
@@ -62,30 +63,30 @@ export function AddContainerSidebar({ latitude, longitude, onSubmit, onCancel }:
     };
 
     return (
-        <div className="add-container-sidebar">
-            <div className="add-container-sidebar__header">
-                <h2 className="add-container-sidebar__title">Добавить контейнер</h2>
-                <button 
-                    className="add-container-sidebar__close"
+        <div className="sidebar">
+            <div className="sidebar__header">
+                <h2 className="sidebar__title">Добавить контейнер</h2>
+                <button
+                    className="sidebar__close"
                     onClick={onCancel}
                     aria-label="Закрыть"
                 >
                     ×
                 </button>
             </div>
-            
-            <div className="add-container-sidebar__content">
+
+            <div className="sidebar__content">
                 <form onSubmit={handleSubmit}>
-                    <div className="add-container-sidebar__section">
-                        <h3 className="add-container-sidebar__section-title">Координаты</h3>
+                    <div className="sidebar__section">
+                        <h3 className="sidebar__section-title">Координаты</h3>
                         <div className="coordinates-display">
                             <div>Широта: {latitude.toFixed(6)}</div>
                             <div>Долгота: {longitude.toFixed(6)}</div>
                         </div>
                     </div>
 
-                    <div className="add-container-sidebar__section">
-                        <h3 className="add-container-sidebar__section-title">Типы отходов</h3>
+                    <div className="sidebar__section">
+                        <h3 className="sidebar__section-title">Типы отходов</h3>
                         <div className="waste-types-list">
                             {allWasteTypes.map((type) => (
                                 <label key={type} className="waste-type-item">
@@ -101,9 +102,9 @@ export function AddContainerSidebar({ latitude, longitude, onSubmit, onCancel }:
                         </div>
                     </div>
 
-                    <div className="add-container-sidebar__section">
-                        <h3 className="add-container-sidebar__section-title">Адрес</h3>
-                        
+                    <div className="sidebar__section">
+                        <h3 className="sidebar__section-title">Адрес</h3>
+
                         <div className="form-field">
                             <label>Населенный пункт *</label>
                             <input

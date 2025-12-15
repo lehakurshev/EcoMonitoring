@@ -10,26 +10,25 @@ export function useContainers(bounds: Bounds | null) {
     useEffect(() => {
         const fetchContainers = async () => {
             if (!bounds) return;
-            
+
             try {
                 setLoading(true);
-                
+
                 const data = await getContainersInArea(
                     bounds.nw[1],
                     bounds.nw[0],
                     bounds.se[1],
                     bounds.se[0]
                 );
-                
+
                 setContainers(data);
-            } catch (error) {
             } finally {
                 setLoading(false);
             }
         };
 
         const timeoutId = setTimeout(fetchContainers, 500);
-        
+
         return () => clearTimeout(timeoutId);
     }, [bounds]);
 

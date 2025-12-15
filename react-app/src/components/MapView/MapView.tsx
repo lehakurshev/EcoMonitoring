@@ -1,5 +1,5 @@
 import Map, { Marker } from 'react-map-gl/maplibre';
-import type { ViewState, MapEvent } from 'react-map-gl/maplibre';
+import type { ViewState, MapEvent, MapLayerMouseEvent } from 'react-map-gl/maplibre';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import type {
     ContainerInfo,
@@ -11,9 +11,9 @@ import type {
 import { ClusterLayer } from '../ClusterLayer/ClusterLayer';
 import { ContainerSidebar } from '../ContainerSidebar/ContainerSidebar';
 import { AddContainerSidebar } from '../AddContainerSidebar/AddContainerSidebar';
-import { GreenZoneLayer } from '../GreenZoneLayer/GreenZoneLayer';
-import { AirQualityLayer } from '../AirQualityLayer/AirQualityLayer';
-import { AirQualitySidebar } from '../AirQualitySidebar/AirQualitySidebar';
+import { GreenZoneLayer } from '../GreenZoneLayer';
+import { AirQualityLayer } from '../AirQualityLayer';
+import { AirQualitySidebar } from '../AirQualitySidebar';
 
 interface MapViewProps {
     viewState: ViewState;
@@ -68,7 +68,7 @@ export function MapView({
     onSubmitContainer,
     onCancelAddContainer
 }: MapViewProps) {
-    const handleMapClick = (event: any) => {
+    const handleMapClick = (event: MapLayerMouseEvent) => {
         if (addingContainer && event.lngLat) {
             onMapClick(event.lngLat.lat, event.lngLat.lng);
         }
@@ -93,12 +93,12 @@ export function MapView({
                     onClose={() => onContainerSelect(null)}
                 />
             )}
-            
+
             <button
                 className="toggle-containers-button"
                 onClick={onToggleContainers}
                 title={showContainers ? 'Скрыть контейнеры' : 'Показать контейнеры'}
-                style={{ 
+                style={{
                     backgroundColor: showContainers ? '#1976D2' : 'white',
                     borderColor: showContainers ? '#1976D2' : '#666',
                     top: '20px',
@@ -107,12 +107,12 @@ export function MapView({
             >
                 <span style={{ fontSize: '20px' }}>🗑️</span>
             </button>
-            
+
             <button
                 className="toggle-greenzones-button"
                 onClick={onToggleGreenZones}
                 title={showGreenZones ? 'Скрыть зеленые зоны' : 'Показать зеленые зоны'}
-                style={{ 
+                style={{
                     backgroundColor: showGreenZones ? '#1976D2' : 'white',
                     borderColor: showGreenZones ? '#1976D2' : '#666',
                     top: '90px',
@@ -121,12 +121,12 @@ export function MapView({
             >
                 <span style={{ fontSize: '20px' }}>🌳</span>
             </button>
-            
+
             <button
                 className="toggle-airquality-button"
                 onClick={onToggleAirQuality}
                 title={showAirQuality ? 'Скрыть качество воздуха' : 'Показать качество воздуха'}
-                style={{ 
+                style={{
                     backgroundColor: showAirQuality ? '#1976D2' : 'white',
                     borderColor: showAirQuality ? '#1976D2' : '#666',
                     top: '160px',
@@ -135,13 +135,13 @@ export function MapView({
             >
                 <span style={{ fontSize: '20px' }}>🌫️</span>
             </button>
-            
+
             {showContainers && (
                 <button
                     className="add-container-button"
                     onClick={onToggleAddMode}
                     title={addingContainer ? 'Отменить добавление' : 'Добавить контейнер'}
-                    style={{ 
+                    style={{
                         backgroundColor: addingContainer ? '#4CAF50' : 'white',
                         borderColor: addingContainer ? '#4CAF50' : '#666'
                     }}
@@ -149,21 +149,21 @@ export function MapView({
                     <span style={{ fontSize: '20px' }}>➕</span>
                 </button>
             )}
-            
+
             {addingContainer && !newContainerPosition && (
                 <div className="add-container-hint">
                     Кликните на карту, чтобы выбрать место для контейнера
                 </div>
             )}
-            
+
             <Map
             {...viewState}
             onMove={onMove}
             onMoveEnd={onMoveEnd}
             onLoad={onMoveEnd}
             onClick={handleMapClick}
-            style={{ 
-                width: '100vw', 
+            style={{
+                width: '100vw',
                 height: '100vh',
                 cursor: addingContainer ? 'crosshair' : 'default'
             }}
@@ -171,12 +171,12 @@ export function MapView({
         >
             {showGreenZones && <GreenZoneLayer greenZones={greenZonePoints} />}
             {showAirQuality && (
-                <AirQualityLayer 
-                    airQualityData={airQualityData} 
+                <AirQualityLayer
+                    airQualityData={airQualityData}
                     onDistrictClick={onAirQualitySelect}
                 />
             )}
-            
+
             {showContainers && (
                 <ClusterLayer
                     containers={containers}
@@ -188,7 +188,7 @@ export function MapView({
                     onContainerClick={onContainerSelect}
                 />
             )}
-            
+
             {newContainerPosition && (
                 <Marker
                     longitude={newContainerPosition.lng}

@@ -1,4 +1,5 @@
 import { Marker } from 'react-map-gl/maplibre';
+import type { MarkerEvent } from 'react-map-gl/maplibre';
 import type { ContainerInfo } from '../../types';
 import { getContainerColor } from '../../types';
 
@@ -19,7 +20,7 @@ export function ContainerMarker({ container, onClick, isSelected = false }: Cont
     const wasteTypes = Array.isArray(container.wasteTypes) ? container.wasteTypes : [];
     const color = isSelected ? '#FF1744' : getContainerColor(wasteTypes);
 
-    const handleClick = (e: any) => {
+    const handleClick = (e: MarkerEvent<MouseEvent>) => {
         e.originalEvent.stopPropagation();
         onClick(container);
     };

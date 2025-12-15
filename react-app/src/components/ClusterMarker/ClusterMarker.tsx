@@ -1,5 +1,7 @@
 import { Marker } from 'react-map-gl/maplibre';
+import type { MarkerEvent } from 'react-map-gl/maplibre';
 import './ClusterMarker.css';
+import React from "react";
 
 interface ClusterMarkerProps {
     longitude: number;
@@ -21,7 +23,7 @@ export function ClusterMarker({
     const size = Math.min(50 + Math.sqrt(pointCount) * 5, 80);
     const fontSize = size > 60 ? '16px' : '14px';
 
-    const handleClick = (e: any) => {
+    const handleClick = (e: MarkerEvent<MouseEvent>) => {
         e.originalEvent.stopPropagation();
         const expansionZoom = Math.min(getExpansionZoom(clusterId), 20);
         onClusterClick(longitude, latitude, expansionZoom);

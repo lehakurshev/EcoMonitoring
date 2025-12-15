@@ -6,7 +6,7 @@ import { useMapBounds, useContainers } from './hooks';
 import { createContainer } from './api';
 import type { ContainerInfo, CreateContainerRequest, AirQualityData } from './types';
 import { mockAirQualityData } from './mockAirQualityData';
-import {useGreenZoneDataHeatMap} from "./hooks/useGreenZoneDataHeatMap.ts";
+import { useGreenZoneDataHeatMap } from './hooks';
 
 function App() {
     const [viewState, setViewState] = useState<ViewState>({
@@ -36,8 +36,9 @@ function App() {
     const { greenZonePoints } = useGreenZoneDataHeatMap(bounds)
 
     const handleMove = (evt: MapEvent) => {
-        if ((evt as any).viewState) {
-            setViewState((evt as any).viewState);
+        const mapEvent = evt as MapEvent & { viewState?: ViewState };
+        if (mapEvent.viewState) {
+            setViewState(mapEvent.viewState);
         }
         updateBounds(evt);
     };
@@ -98,15 +99,11 @@ function App() {
     };
 
     const handleSubmitContainer = async (container: CreateContainerRequest) => {
-        try {
-            await createContainer(container);
-            setNewContainerPosition(null);
-            setAddingContainer(false);
-            setSuccessMessage('Контейнер успешно добавлен');
-            setTimeout(() => setSuccessMessage(null), 3000);
-        } catch (error) {
-            throw error;
-        }
+        await createContainer(container);
+        setNewContainerPosition(null);
+        setAddingContainer(false);
+        setSuccessMessage('Контейнер успешно добавлен');
+        setTimeout(() => setSuccessMessage(null), 3000);
     };
 
     return (

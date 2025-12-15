@@ -24,8 +24,6 @@ const LAYER_CONFIGS = RADIUS_LEVELS.map((baseRadius, index) => {
     };
 });
 
-
-
 export function GreenZoneLayer({ greenZones }: GreenZoneLayerProps) {
     const layerData = useMemo(() => {
         return LAYER_CONFIGS.map(config => {
