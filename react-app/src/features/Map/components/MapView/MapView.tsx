@@ -1,5 +1,5 @@
-import Map, { Marker } from 'react-map-gl/maplibre';
-import type { ViewState, MapEvent, MapLayerMouseEvent } from 'react-map-gl/maplibre';
+import Map, {Marker} from 'react-map-gl/maplibre';
+import type {ViewState, MapEvent, MapLayerMouseEvent} from 'react-map-gl/maplibre';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import type {
     ContainerInfo,
@@ -8,12 +8,13 @@ import type {
     AirQualityData,
     GreenZonePoint
 } from '../../../../types.ts';
-import { ClusterLayer } from '../ClusterLayer/ClusterLayer.tsx';
-import { ContainerSidebar } from '../../../Containers/components/ContainerSidebar/ContainerSidebar.tsx';
-import { AddContainerSidebar } from '../../../Containers/components/AddContainerSidebar/AddContainerSidebar.tsx';
-import { GreenZoneLayer } from '../../../GreenZones/components/GreenZoneLayer/GreenZoneLayer.tsx';
-import { AirQualityLayer } from '../../../AirQuality/components/AirQualityLayer/AirQualityLayer.tsx';
-import { AirQualitySidebar } from '../../../AirQuality/components/AirQualitySidebar/AirQualitySidebar.tsx';
+import {ClusterLayer} from '../ClusterLayer/ClusterLayer.tsx';
+import './MapView.css';
+import {ContainerSidebar} from '../../../Containers/components/ContainerSidebar/ContainerSidebar.tsx';
+import {AddContainerSidebar} from '../../../Containers/components/AddContainerSidebar/AddContainerSidebar.tsx';
+import {GreenZoneLayer} from '../../../GreenZones/components/GreenZoneLayer/GreenZoneLayer.tsx';
+import {AirQualityLayer} from '../../../AirQuality/components/AirQualityLayer/AirQualityLayer.tsx';
+import {AirQualitySidebar} from '../../../AirQuality/components/AirQualitySidebar/AirQualitySidebar.tsx';
 
 interface MapViewProps {
     viewState: ViewState;
@@ -43,31 +44,31 @@ interface MapViewProps {
 }
 
 export function MapView({
-    viewState,
-    bounds,
-    containers,
-    greenZonePoints,
-    airQualityData,
-    selectedAirQuality,
-    selectedContainer,
-    showContainers,
-    showGreenZones,
-    showAirQuality,
-    addingContainer,
-    newContainerPosition,
-    onMove,
-    onMoveEnd,
-    onViewStateChange,
-    onContainerSelect,
-    onToggleContainers,
-    onToggleGreenZones,
-    onToggleAirQuality,
-    onAirQualitySelect,
-    onToggleAddMode,
-    onMapClick,
-    onSubmitContainer,
-    onCancelAddContainer
-}: MapViewProps) {
+                            viewState,
+                            bounds,
+                            containers,
+                            greenZonePoints,
+                            airQualityData,
+                            selectedAirQuality,
+                            selectedContainer,
+                            showContainers,
+                            showGreenZones,
+                            showAirQuality,
+                            addingContainer,
+                            newContainerPosition,
+                            onMove,
+                            onMoveEnd,
+                            onViewStateChange,
+                            onContainerSelect,
+                            onToggleContainers,
+                            onToggleGreenZones,
+                            onToggleAirQuality,
+                            onAirQualitySelect,
+                            onToggleAddMode,
+                            onMapClick,
+                            onSubmitContainer,
+                            onCancelAddContainer
+                        }: MapViewProps) {
     const handleMapClick = (event: MapLayerMouseEvent) => {
         if (addingContainer && event.lngLat) {
             onMapClick(event.lngLat.lat, event.lngLat.lng);
@@ -95,58 +96,36 @@ export function MapView({
             )}
 
             <button
-                className="toggle-containers-button"
+                className={`toggle-containers-button ${showContainers ? 'active' : ''}`}
                 onClick={onToggleContainers}
                 title={showContainers ? 'Скрыть контейнеры' : 'Показать контейнеры'}
-                style={{
-                    backgroundColor: showContainers ? '#1976D2' : 'white',
-                    borderColor: showContainers ? '#1976D2' : '#666',
-                    top: '20px',
-                    right: '20px'
-                }}
             >
-                <span style={{ fontSize: '20px' }}>🗑️</span>
+                <span>🗑️</span>
             </button>
 
             <button
-                className="toggle-greenzones-button"
+                className={`toggle-greenzones-button ${showGreenZones ? 'active' : ''}`}
                 onClick={onToggleGreenZones}
                 title={showGreenZones ? 'Скрыть зеленые зоны' : 'Показать зеленые зоны'}
-                style={{
-                    backgroundColor: showGreenZones ? '#1976D2' : 'white',
-                    borderColor: showGreenZones ? '#1976D2' : '#666',
-                    top: '90px',
-                    right: '20px'
-                }}
             >
-                <span style={{ fontSize: '20px' }}>🌳</span>
+                <span>🌳</span>
             </button>
 
             <button
-                className="toggle-airquality-button"
+                className={`toggle-airquality-button ${showAirQuality ? 'active' : ''}`}
                 onClick={onToggleAirQuality}
                 title={showAirQuality ? 'Скрыть качество воздуха' : 'Показать качество воздуха'}
-                style={{
-                    backgroundColor: showAirQuality ? '#1976D2' : 'white',
-                    borderColor: showAirQuality ? '#1976D2' : '#666',
-                    top: '160px',
-                    right: '20px'
-                }}
             >
-                <span style={{ fontSize: '20px' }}>🌫️</span>
+                <span>🌫️</span>
             </button>
 
             {showContainers && (
                 <button
-                    className="add-container-button"
+                    className={`add-container-button ${addingContainer ? 'active' : ''}`}
                     onClick={onToggleAddMode}
                     title={addingContainer ? 'Отменить добавление' : 'Добавить контейнер'}
-                    style={{
-                        backgroundColor: addingContainer ? '#4CAF50' : 'white',
-                        borderColor: addingContainer ? '#4CAF50' : '#666'
-                    }}
                 >
-                    <span style={{ fontSize: '20px' }}>➕</span>
+                    <span>➕</span>
                 </button>
             )}
 
@@ -156,63 +135,56 @@ export function MapView({
                 </div>
             )}
 
-            <Map
-            {...viewState}
-            onMove={onMove}
-            onMoveEnd={onMoveEnd}
-            onLoad={onMoveEnd}
-            onClick={handleMapClick}
-            style={{
-                width: '100vw',
-                height: '100vh',
-                cursor: addingContainer ? 'crosshair' : 'default'
-            }}
-            mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
-        >
-            {showGreenZones && <GreenZoneLayer greenZones={greenZonePoints} />}
-            {showAirQuality && (
-                <AirQualityLayer
-                    airQualityData={airQualityData}
-                    onDistrictClick={onAirQualitySelect}
-                />
-            )}
-
-            {showContainers && (
-                <ClusterLayer
-                    containers={containers}
-                    bounds={bounds}
-                    zoom={viewState.zoom}
-                    viewState={viewState}
-                    selectedContainer={selectedContainer}
-                    onViewStateChange={onViewStateChange}
-                    onContainerClick={onContainerSelect}
-                />
-            )}
-
-            {newContainerPosition && (
-                <Marker
-                    longitude={newContainerPosition.lng}
-                    latitude={newContainerPosition.lat}
-                    anchor="center"
-                    offset={[5, 35]}
+            <div className={`map-wrapper ${addingContainer ? 'adding' : ''}`}>
+                <Map
+                    {...viewState}
+                    onMove={onMove}
+                    onMoveEnd={onMoveEnd}
+                    onLoad={onMoveEnd}
+                    onClick={handleMapClick}
+                    cursor={addingContainer ? 'crosshair' : undefined}
+                    mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
                 >
-                    <svg
-                        width="24"
-                        height="35"
-                        viewBox="0 0 24 35"
-                        style={{
-                            fill: '#4CAF50',
-                            stroke: '#FFFFFF',
-                            strokeWidth: 1.5,
-                            filter: 'drop-shadow(0 0 8px rgba(76, 175, 80, 0.8))',
-                            animation: 'pulse 1.5s ease-in-out infinite'
-                        }}
-                    >
-                        <path d="M12 0C7.58 0 4 3.58 4 8c0 7 8 17 8 17s8-10 8-17c0-4.42-3.58-8-8-8zm0 11c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"/>
-                    </svg>
-                </Marker>
-            )}
-        </Map>
+                    {showGreenZones && <GreenZoneLayer greenZones={greenZonePoints}/>}
+                    {showAirQuality && (
+                        <AirQualityLayer
+                            airQualityData={airQualityData}
+                            onDistrictClick={onAirQualitySelect}
+                        />
+                    )}
+
+                    {showContainers && (
+                        <ClusterLayer
+                            containers={containers}
+                            bounds={bounds}
+                            zoom={viewState.zoom}
+                            viewState={viewState}
+                            selectedContainer={selectedContainer}
+                            onViewStateChange={onViewStateChange}
+                            onContainerClick={onContainerSelect}
+                        />
+                    )}
+
+                    {newContainerPosition && (
+                        <Marker
+                            longitude={newContainerPosition.lng}
+                            latitude={newContainerPosition.lat}
+                            anchor="center"
+                            offset={[5, 35]}
+                        >
+                            <svg
+                                width="24"
+                                height="35"
+                                viewBox="0 0 24 35"
+                                className="new-marker"
+                            >
+                                <path
+                                    d="M12 0C7.58 0 4 3.58 4 8c0 7 8 17 8 17s8-10 8-17c0-4.42-3.58-8-8-8zm0 11c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"/>
+                            </svg>
+                        </Marker>
+                    )}
+                </Map>
+            </div>
         </>
     );
 }

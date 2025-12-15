@@ -37,7 +37,12 @@ export function ClusterLayer({
         <>
             {clusters.map((cluster) => {
                 const [lng, lat] = cluster.geometry.coordinates;
-                const { cluster: isCluster, point_count: pointCount = 0 } = cluster.properties as any;
+                type ClusterProperties = {
+                    cluster?: boolean;
+                    point_count?: number;
+                    container?: ContainerInfo;
+                };
+                const { cluster: isCluster, point_count: pointCount = 0 } = cluster.properties as ClusterProperties;
 
                 if (isCluster) {
                     return (
