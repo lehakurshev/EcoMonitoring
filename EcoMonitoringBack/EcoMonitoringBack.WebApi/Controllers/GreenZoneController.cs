@@ -1,7 +1,9 @@
 ﻿using EcoMonitoringBack.ContractModels;
 using EcoMonitoringBack.Interfaces;
 using EcoMonitoringBack.Mappings;
+using EcoMonitoringBack.Models.GreenZones;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Driver.Linq;
 
 namespace EcoMonitoringBack.Controllers;
 
@@ -38,6 +40,31 @@ public class GreenZoneController : ControllerBase
         }
     }
 
+    [HttpGet("area/points")]
+    public async Task<ActionResult<List<EcoGreenZoneAreaAndCenter>>> GetByAreaPoints(
+        [FromQuery] double minLat,
+        [FromQuery] double maxLat,
+        [FromQuery] double minLon,
+        [FromQuery] double maxLon)
+    {
+        var currentSize = Infrastructure.GetByAreaResizedArea(minLat, maxLat, minLon, maxLon, 3);
+        try
+        {
+            var greenZones = (await _repositoryGreenZones.GetByAreaAsync(currentSize.Item1,
+                    currentSize.Item2, currentSize.Item3, currentSize.Item4))?
+                .Select(x => x.Coordinates)
+                .Where(points => _geoAnalysisService.IsValidPolygon(points))
+                .Select(points => _geoAnalysisService.CalculatePolygonAreaAndCenter(points))
+                .Select(dto => dto.ToEcoGreenZoneAreaAndCenter())
+                .ToList();
+            return Ok(greenZones);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = $"Ошибка при получении зеленых зон: {ex.Message}" });
+        }
+    }
+
     [HttpPost("analyze-polygons")]
     public ActionResult<List<EcoGreenZoneAreaAndCenter>> AnalyzePolygonsBatch([FromBody] List<EcoGreenZoneData> greenZoneDates)
     {
@@ -52,8 +79,8 @@ public class GreenZoneController : ControllerBase
 
             foreach (var greenZoneData in greenZoneDates)
             {
-                var domainModel = greenZoneData.ToGreenZoneData();
-                if (_geoAnalysisService.IsValidPolygon(domainModel.Coordinates))
+                var domainModel = greenZoneData.ToGreenZoneData().Coordinates;
+                if (_geoAnalysisService.IsValidPolygon(domainModel))
                 {
                     var result = _geoAnalysisService.CalculatePolygonAreaAndCenter(domainModel);
                     results.Add(result.ToEcoGreenZoneAreaAndCenter());
@@ -67,4 +94,5 @@ public class GreenZoneController : ControllerBase
             return StatusCode(500, new { error = $"Ошибка при пакетном анализе полигонов: {ex.Message}" });
         }
     }
+
 }

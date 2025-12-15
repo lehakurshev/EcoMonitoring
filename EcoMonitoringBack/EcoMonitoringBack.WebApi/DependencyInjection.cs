@@ -9,7 +9,7 @@ public static class DependencyInjection
     public static IServiceCollection AddInjection(
         this IServiceCollection services)
     {
-        services.AddScoped<IGreenZoneService, GreenZoneServiceService>();
+        services.AddScoped<IGreenZoneService, GreenZoneService>();
         services.AddScoped<IServiceMigrationContainer, ServiceMigrationContainer>();
         services.AddScoped<IServiceContainers, ServiceContainers>();
         services.AddScoped<IServiceReviews, ServiceReviews>();

@@ -1,120 +1,120 @@
 import { Source, Layer } from 'react-map-gl/maplibre';
-import type { GreenZone } from '../../types';
+import type {GreenZonePoint} from '../../types';
 import { useMemo } from 'react';
+import {createPointCloud} from "./index.ts";
+
 
 interface GreenZoneLayerProps {
-    greenZones: GreenZone[];
+    greenZones: GreenZonePoint[];
 }
 
-export function GreenZoneLayer({ greenZones }: GreenZoneLayerProps) {
-    const geojson = useMemo(() => ({
-        type: 'FeatureCollection' as const,
-        features: greenZones.map((zone) => ({
-            type: 'Feature' as const,
-            id: zone.id,
-            properties: {
-                name: zone.name || '',
-                type: zone.type,
-                subtype: zone.subtype || ''
-            },
-            geometry: {
-                type: 'Polygon' as const,
-                coordinates: [
-                    zone.coordinates.map(point => [point.longitude, point.latitude])
-                ]
-            }
-        }))
-    }), [greenZones]);
+const RADIUS_LEVELS = [16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072];
 
-    const pointsGeoJson = useMemo(() => ({
-        type: 'FeatureCollection' as const,
-        features: greenZones.flatMap((zone) => 
-            zone.coordinates.map(point => ({
-                type: 'Feature' as const,
-                properties: {},
-                geometry: {
-                    type: 'Point' as const,
-                    coordinates: [point.longitude, point.latitude]
+const LAYER_CONFIGS = RADIUS_LEVELS.map((baseRadius, index) => {
+    const nextRadius = RADIUS_LEVELS[index + 1] || Infinity;
+
+    return {
+        id: `radius-${baseRadius}`,
+        minRadius: baseRadius,
+        maxRadius: nextRadius,
+        baseRadius: baseRadius,
+        heatmapRadius: Math.min(150, Math.max(10, baseRadius / 3)),
+        colorIntensity: 0.5 + (index * 0.4),
+        pointDensity: baseRadius / 20000000
+    };
+});
+
+
+
+export function GreenZoneLayer({ greenZones }: GreenZoneLayerProps) {
+    const layerData = useMemo(() => {
+        return LAYER_CONFIGS.map(config => {
+            const filteredZones = greenZones.filter(zone => {
+                const radius = zone.radius;
+                return radius >= config.minRadius && radius < config.maxRadius;
+            });
+
+            const features = filteredZones.flatMap(zone =>
+                createPointCloud(zone, config)
+            );
+
+            return {
+                config,
+                data: {
+                    type: 'FeatureCollection' as const,
+                    features
                 }
-            }))
-        )
-    }), [greenZones]);
+            };
+        });
+    }, [greenZones]);
 
     return (
         <>
-            <Layer
-                id="greenzones-background"
-                type="background"
-                paint={{
-                    'background-color': '#E0E0E0',
-                    'background-opacity': 0.3
-                }}
-            />
-            
-            <Source
-                id="greenzones-heatmap-points"
-                type="geojson"
-                data={pointsGeoJson}
-            >
-                <Layer
-                    id="greenzones-heatmap"
-                    type="heatmap"
-                    paint={{
-                        'heatmap-weight': 1,
-                        'heatmap-intensity': [
-                            'interpolate',
-                            ['linear'],
-                            ['zoom'],
-                            0, 0.5,
-                            15, 1.5
-                        ],
-                        'heatmap-color': [
-                            'interpolate',
-                            ['linear'],
-                            ['heatmap-density'],
-                            0, 'rgba(224, 224, 224, 0.3)',
-                            0.1, '#E8F5E9',
-                            0.3, '#A5D6A7',
-                            0.5, '#66BB6A',
-                            0.7, '#43A047',
-                            1, '#2E7D32'
-                        ],
-                        'heatmap-radius': [
-                            'interpolate',
-                            ['linear'],
-                            ['zoom'],
-                            0, 20,
-                            10, 30,
-                            15, 50
-                        ],
-                        'heatmap-opacity': 1
-                    }}
-                />
-            </Source>
-            
-            <Source
-                id="greenzones"
-                type="geojson"
-                data={geojson}
-            >
-                <Layer
-                    id="greenzones-fill"
-                    type="fill"
-                    paint={{
-                        'fill-color': '#2E7D32',
-                        'fill-opacity': 0.4
-                    }}
-                />
-                <Layer
-                    id="greenzones-outline"
-                    type="line"
-                    paint={{
-                        'line-color': '#1B5E20',
-                        'line-width': 1,
-                        'line-opacity': 0.6
-                    }}
-                />
-            </Source>
+            {layerData.map(({ config, data }) => {
+                const basePixelRadius = Math.sqrt(config.baseRadius) / 20000;
+
+                const radiusValues = {
+                    0: basePixelRadius,
+                    2: basePixelRadius * 4,
+                    5: basePixelRadius * 32,
+                    10: basePixelRadius * 1024,
+                    15: basePixelRadius * 32768,
+                    20: basePixelRadius * 1048576
+                };
+
+                const intensityValues = {
+                    0: 1,
+                    5: 32,
+                    10: 1024,
+                    15: 32768,
+                    20: 1048576
+                };
+
+                return (
+                    <Source key={config.id} id={config.id} type="geojson" data={data}>
+                        <Layer
+                            id={`heatmap-${config.id}`}
+                            type="heatmap"
+                            paint={{
+                                'heatmap-weight': ['get', 'weight'],
+                                'heatmap-radius': [
+                                    'interpolate', ['exponential', 2], ['zoom'],
+                                    0, radiusValues[0],
+                                    2, radiusValues[2],
+                                    5, radiusValues[5],
+                                    10, radiusValues[10],
+                                    15, radiusValues[15],
+                                    20, radiusValues[20]
+                                ],
+                                'heatmap-intensity': [
+                                    'interpolate', ['exponential', 2], ['zoom'],
+                                    0, intensityValues[0],
+                                    5, intensityValues[5],
+                                    10, intensityValues[10],
+                                    15, intensityValues[15],
+                                    20, intensityValues[20]
+                                ],
+                                'heatmap-color': [
+                                    'interpolate', ['linear'], ['heatmap-density'],
+                                    0, 'rgba(39,131,46,0)',
+                                    0.1, 'rgba(40,136,48,0.1)',
+                                    0.2, 'rgba(42,140,50,0.2)',
+                                    0.4, 'rgba(44,141,51,0.42)',
+                                    0.6, 'rgba(37,128,44,0.55)',
+                                    0.8, 'rgba(42,141,50,0.74)',
+                                    1, '#288a2d'
+                                ],
+                                'heatmap-opacity': [
+                                    'interpolate', ['linear'], ['zoom'],
+                                    0, 0.1,
+                                    10, 0.7,
+                                    15, 0.9
+                                ]
+                            }}
+                        />
+                    </Source>
+                );
+            })}
         </>
     );
 }
