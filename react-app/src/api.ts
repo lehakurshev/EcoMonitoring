@@ -141,7 +141,7 @@ export async function getGreenZonesPointsAndAreaInAreaResponse(
             maxLon: maxLon.toString()
         });
 
-        const response = await fetch(`${API_BASE_URL}/greenzones/area/points?${params}`);
+        const response = await fetch(`${API_BASE_URL}/greenzones/area?${params}`);
 
         if (!response.ok) {
             logger.error('API: Ошибка получения зеленых зон', { status: response.status });

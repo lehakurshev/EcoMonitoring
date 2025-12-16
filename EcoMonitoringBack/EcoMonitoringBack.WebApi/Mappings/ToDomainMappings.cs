@@ -38,7 +38,7 @@ public static class ToDomainMappings
         return new Point(point.Latitude, point.Longitude);
     }
 
-    private static List<Point> ToPointsList(this IEnumerable<EcoPoint> points)
+    public static List<Point> ToPointsList(this IEnumerable<EcoPoint> points)
     {
         return points
             .Select(x => x.ToDomain())

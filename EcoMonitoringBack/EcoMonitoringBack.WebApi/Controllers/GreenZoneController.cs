@@ -13,7 +13,7 @@ public class GreenZoneController(IGreenZoneService geoAnalysisService, IReposito
     : ControllerBase
 {
     [HttpGet("area")]
-    public async Task<ActionResult<List<EcoGreenZone>>> GetByArea(
+    public async Task<ActionResult<List<EcoGreenZoneAreaAndCenter>>> GetByArea(
         [FromQuery] double minLat,
         [FromQuery] double maxLat,
         [FromQuery] double minLon,
@@ -24,7 +24,16 @@ public class GreenZoneController(IGreenZoneService geoAnalysisService, IReposito
             var greenZones = (await repositoryGreenZones.GetByAreaAsync(minLat, maxLat, minLon, maxLon))?
                 .Select(x => x.ToEcoGreenZone())
                 .ToList();
-            return Ok(greenZones);
+            
+            var results = (
+                from greenZone in greenZones
+                let coordinates = greenZone.Coordinates
+                let domainPoints = coordinates.ToPointsList()
+                where geoAnalysisService.IsValidPolygon(domainPoints)
+                let analysis = geoAnalysisService.CalculatePolygonAreaAndCenter(domainPoints)
+                select analysis.ToEcoGreenZoneAreaAndCenter()
+            ).ToList();
+            return Ok(results);
         }
         catch (Exception ex)
         {
