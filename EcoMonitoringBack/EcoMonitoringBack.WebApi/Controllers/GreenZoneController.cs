@@ -47,7 +47,7 @@ public class GreenZoneController(IGreenZoneService geoAnalysisService, IReposito
                 select greenZoneData.ToGreenZoneData()
                 into domainModel
                 where geoAnalysisService.IsValidPolygon(domainModel.Coordinates)
-                select geoAnalysisService.CalculatePolygonAreaAndCenter(domainModel)
+                select geoAnalysisService.CalculatePolygonAreaAndCenter(domainModel.Coordinates)
                 into result
                 select result.ToEcoGreenZoneAreaAndCenter()).ToList();
 
