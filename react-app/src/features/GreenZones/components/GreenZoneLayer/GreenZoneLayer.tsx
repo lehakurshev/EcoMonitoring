@@ -1,7 +1,7 @@
 import { Source, Layer } from 'react-map-gl/maplibre';
 import type {GreenZonePoint} from '../../../../types.ts';
 import { useMemo } from 'react';
-import {createPointCloud} from "../../../../utils/createPointCloud.ts";
+import {createPointCloud} from "../../services/createPointCloud.ts";
 
 
 interface GreenZoneLayerProps {

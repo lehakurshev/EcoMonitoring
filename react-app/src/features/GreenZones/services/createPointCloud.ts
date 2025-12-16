@@ -1,4 +1,4 @@
-﻿import {GreenZonePoint} from "../types.ts";
+﻿import {GreenZonePoint} from "../../../types.ts";
 
 export interface LayerConfig {
     id: string;
