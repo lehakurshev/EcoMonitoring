@@ -1,4 +1,4 @@
-@EcoMonitoringBack_HostAddress = http://localhost:5101
+@EcoMonitoringBack_HostAddress = http://localhost:5101/api
 
 GET {{EcoMonitoringBack_HostAddress}}/containers
 Accept: application/json

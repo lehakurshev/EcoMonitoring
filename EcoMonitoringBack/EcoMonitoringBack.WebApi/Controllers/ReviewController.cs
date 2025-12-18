@@ -57,4 +57,57 @@ public class ReviewController(IServiceReviews serviceReviews, ILogger<ReviewCont
             return StatusCode(500, new { error = $"Ошибка при создании отзыва: {ex.Message}" });
         }
     }
+    
+    [HttpPut]
+    public async Task<ActionResult<EcoContainerReview>> UpdateReview(
+        string containerId,
+        [FromBody] EcoCreateReviewRequest request)
+    {
+        logger.LogInformation("Запрос на обнавление отзыва для контейнера {ContainerId}", containerId);
+        try
+        {
+            var createdReview = await serviceReviews.UpdateReviewAsync(containerId, request.ToCreateReviewRequest());
+            if (!createdReview)
+            {
+                logger.LogInformation("Не найден контейнер {ContainerId}", containerId);
+                return BadRequest();
+            }
+            logger.LogInformation("Отзыв успешно обновлён для контейнера {ContainerId}", containerId);
+            return Ok();
+        }
+        catch (ArgumentException ex)
+        {
+            logger.LogWarning("Некорректный запрос на обновление отзыва для контейнера {ContainerId}: {Message}", containerId, ex.Message);
+            return BadRequest(new { error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Ошибка при обновлении отзыва для контейнера {ContainerId}", containerId);
+            return StatusCode(500, new { error = $"Ошибка при обновлении отзыва: {ex.Message}" });
+        }
+    }
+    
+    
+    [HttpGet("history")]
+    public async Task<ActionResult<List<EcoContainerReview>>> GetReviewsBeforeDatesAsync(
+        string containerId, DateTime moment)
+    {
+        logger.LogInformation("Запрос на данные об отзывах на определённую дату {ContainerId}", containerId);
+        try
+        {
+            var reviews = await serviceReviews.GetReviewsBeforeDatesAsync(moment, containerId);
+            logger.LogInformation("Отзывы успешно загружены с {ContainerId}", containerId);
+            return Ok(reviews);
+        }
+        catch (ArgumentException ex)
+        {
+            logger.LogWarning("Некорректный запрос данных об отзывах на определённую дату {ContainerId}: {Message}", containerId, ex.Message);
+            return BadRequest(new { error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Ошибка при запросе данных об отзывах на определённую дату {ContainerId}", containerId);
+            return StatusCode(500, new { error = $"Ошибка при запросе : {ex.Message}" });
+        }
+    }
 }
