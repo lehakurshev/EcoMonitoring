@@ -1,0 +1,58 @@
+name: Deploy EcoMonitoring
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy to server
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+            set -e
+
+            echo "🔍 Проверка Docker..."
+
+            if ! command -v docker >/dev/null 2>&1; then
+              echo "❌ Docker не найден. Устанавливаем..."
+              curl -fsSL https://get.docker.com | sh
+              sudo usermod -aG docker $USER
+            fi
+
+            if ! command -v docker-compose >/dev/null 2>&1; then
+              echo "❌ docker-compose не найден. Устанавливаем..."
+              sudo curl -L "https://github.com/docker/compose/releases/download/v2.25.0/docker-compose-linux-x86_64" \
+                -o /usr/local/bin/docker-compose
+              sudo chmod +x /usr/local/bin/docker-compose
+            fi
+
+            echo "✅ Docker и docker-compose установлены"
+
+            mkdir -p ${{ secrets.DEPLOY_PATH }}
+            cd ${{ secrets.DEPLOY_PATH }}
+
+            if [ ! -d ".git" ]; then
+              echo "📥 Клонирование репозитория..."
+              git clone https://github.com/${{ github.repository }} .
+            else
+              echo "📦 Репозиторий уже существует"
+            fi
+
+            chmod +x deploy.sh
+            ./deploy.sh ${{ secrets.DEPLOY_PATH }}
+
+          EOF
