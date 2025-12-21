@@ -49,7 +49,11 @@ jobs:
               echo "📥 Клонирование репозитория..."
               git clone https://github.com/${{ github.repository }} .
             else
-              echo "📦 Репозиторий уже существует"
+              echo "📦 Репозиторий существует — обновляем"
+              git fetch origin
+              git checkout main
+              git reset --hard origin/main
+              git clean -fd
             fi
 
             chmod +x deploy.sh
