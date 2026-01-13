@@ -26,6 +26,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.3s;
 }
 
 .toggle-containers-button { top: 20px; }

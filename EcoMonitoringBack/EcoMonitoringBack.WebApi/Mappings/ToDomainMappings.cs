@@ -1,5 +1,6 @@
 using EcoMonitoringBack.ContractModels;
 using EcoMonitoringBack.Dto;
+using EcoMonitoringBack.Models.AirQuality;
 using EcoMonitoringBack.Models.Common;
 using EcoMonitoringBack.Models.Container;
 using EcoMonitoringBack.Models.GreenZones;
@@ -48,5 +49,22 @@ public static class ToDomainMappings
     private static Address ToDomain(this EcoAddress address)
     {
         return new Address(address.Settlement, address.District, address.Street, address.House);
+    }
+    
+    public static AirQualityData ToAirQualityData(this EcoAirQualityData data)
+    {
+        return new AirQualityData
+        {
+            Location = data.Location.ToDomain(),
+            District = data.District,
+            Pm25 = data.Pm25,
+            Pm10 = data.Pm10,
+            So2 = data.So2,
+            No2 = data.No2,
+            Co = data.Co,
+            O3 = data.O3,
+            Aqi = data.Aqi,
+            CreatedAt = DateTime.UtcNow
+        };
     }
 }

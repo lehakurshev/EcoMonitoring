@@ -46,6 +46,8 @@ services:
     build:
       context: ./react-app
       dockerfile: Dockerfile
+      args:
+        - VITE_ADMIN_PASSWORD_HASH=${VITE_ADMIN_PASSWORD_HASH}
     container_name: ecomonitoring-frontend
     restart: unless-stopped
     ports:
