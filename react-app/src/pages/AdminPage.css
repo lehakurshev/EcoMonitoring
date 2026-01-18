@@ -7,6 +7,9 @@
     margin: 0;
     padding: 0;
     overflow-x: hidden;
+    /* Переопределяем системные цвета для всей админки */
+    color: #213547 !important;
+    background-color: #f5f5f5 !important;
 }
 
 .admin-header {
@@ -26,7 +29,7 @@
 
 .admin-header h1 {
     margin: 0;
-    color: #333;
+    color: #333 !important;
     font-size: 1.75rem;
 }
 
@@ -93,7 +96,7 @@
 .upload-section h2,
 .info-section h3 {
     margin: 0 0 1.5rem 0;
-    color: #333;
+    color: #333 !important;
 }
 
 .mode-selector {
@@ -111,6 +114,7 @@
     cursor: pointer;
     font-weight: 500;
     transition: all 0.3s;
+    color: #333 !important; /* Явно устанавливаем цвет текста для неактивных кнопок */
 }
 
 .mode-selector button.active {
@@ -151,7 +155,7 @@
     text-align: center;
     cursor: pointer;
     transition: all 0.3s;
-    color: #666;
+    color: #666 !important;
 }
 
 .file-label:hover {
@@ -171,6 +175,8 @@
     box-sizing: border-box;
     overflow-x: auto;
     word-wrap: break-word;
+    color: #213547 !important; /* Явно устанавливаем цвет текста */
+    background-color: white !important; /* Явно устанавливаем фон */
 }
 
 .upload-json textarea:focus {
@@ -213,7 +219,7 @@
 }
 
 .info-section p {
-    color: #666;
+    color: #666 !important;
     line-height: 1.6;
     margin-bottom: 1rem;
 }
@@ -225,6 +231,8 @@
     overflow-x: auto;
     font-size: 0.85rem;
     border: 1px solid #e0e0e0;
+    color: #213547 !important; /* Явно устанавливаем темный цвет текста */
+    font-family: 'Courier New', monospace;
 }
 
 .info-block {
@@ -237,7 +245,7 @@
 
 .info-block h4 {
     margin: 0 0 0.75rem 0;
-    color: #333;
+    color: #333 !important;
 }
 
 .info-block ul {
@@ -247,11 +255,11 @@
 
 .info-block li {
     margin-bottom: 0.5rem;
-    color: #666;
+    color: #666 !important;
     line-height: 1.5;
 }
 
 .info-block strong {
-    color: #667eea;
+    color: #667eea !important;
     font-weight: 600;
 }
