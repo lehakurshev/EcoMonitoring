@@ -4,6 +4,12 @@
   height: 100vh;
 }
 
+.map-view {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
 .map-wrapper.adding {
   cursor: crosshair;
 }
@@ -30,8 +36,25 @@
 }
 
 .toggle-containers-button { top: 20px; }
-.toggle-greenzones-button { top: 80px; }
-.toggle-airquality-button { top: 140px; }
+.toggle-greenzones-button { top: 90px; }
+.toggle-airquality-button { top: 160px; }
+
+.add-container-button {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  width: 50px;
+  height: 50px;
+  background: white;
+  border: 2px solid #4CAF50;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
 
 .toggle-containers-button span,
 .toggle-greenzones-button span,
@@ -48,20 +71,6 @@
   color: white;
 }
 
-.add-container-button {
-  position: absolute;
-  right: 20px;
-  bottom: 20px;
-  background: white;
-  border: 1px solid #666;
-  padding: 8px 10px;
-  border-radius: 6px;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
 .add-container-button.active {
   background-color: #4CAF50;
   border-color: #4CAF50;
@@ -73,10 +82,12 @@
   right: 20px;
   bottom: 80px;
   background-color: #4CAF50;
-  border-color: #4CAF50;
-  padding: 8px 12px;
+  color: white;
+  padding: 10px 16px;
   border-radius: 6px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  font-size: 14px;
+  max-width: 280px;
 }
 
 .new-marker {
@@ -91,4 +102,90 @@
   0% { transform: scale(1); }
   50% { transform: scale(1.05); }
  100% { transform: scale(1); }
+}
+
+/* Адаптивная верстка для мобильных устройств */
+@media screen and (max-width: 768px) {
+  .toggle-containers-button,
+  .toggle-greenzones-button,
+  .toggle-airquality-button {
+    right: 10px;
+    padding: 6px 8px;
+    border-radius: 4px;
+    z-index: 999;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+  }
+  
+  /* Скрыть кнопки и подсказку когда сайдбар открыт на мобильных */
+  .map-view.sidebar-open .toggle-containers-button,
+  .map-view.sidebar-open .toggle-greenzones-button,
+  .map-view.sidebar-open .toggle-airquality-button,
+  .map-view.sidebar-open .add-container-button,
+  .map-view.sidebar-open .add-container-hint {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  
+  .toggle-containers-button { top: 10px; }
+  .toggle-greenzones-button { top: 65px; }
+  .toggle-airquality-button { top: 120px; }
+  
+  .add-container-button {
+    bottom: 80px;
+    right: 10px;
+    width: 46px;
+    height: 46px;
+  }
+  
+  .toggle-containers-button span,
+  .toggle-greenzones-button span,
+  .toggle-airquality-button span,
+  .add-container-button span {
+    font-size: 18px;
+  }
+  
+  .add-container-hint {
+    bottom: 136px;
+    right: 10px;
+    padding: 8px 12px;
+    font-size: 12px;
+    max-width: calc(100vw - 30px);
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .toggle-containers-button,
+  .toggle-greenzones-button,
+  .toggle-airquality-button {
+    right: 8px;
+    padding: 5px 6px;
+    border-radius: 4px;
+  }
+  
+  .toggle-containers-button { top: 8px; }
+  .toggle-greenzones-button { top: 58px; }
+  .toggle-airquality-button { top: 108px; }
+  
+  .add-container-button {
+    bottom: 70px;
+    right: 8px;
+    width: 42px;
+    height: 42px;
+  }
+  
+  .toggle-containers-button span,
+  .toggle-greenzones-button span,
+  .toggle-airquality-button span,
+  .add-container-button span {
+    font-size: 16px;
+  }
+  
+  .add-container-hint {
+    bottom: 120px;
+    right: 8px;
+    padding: 6px 10px;
+    font-size: 11px;
+    max-width: calc(100vw - 24px);
+  }
 }

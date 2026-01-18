@@ -88,6 +88,13 @@ export function MapPage() {
         if (!addingContainer) {
             setSelectedContainer(null);
             setNewContainerPosition(null);
+            // Автоматически включить режим контейнеров при добавлении
+            if (!showContainers) {
+                setShowGreenZones(false);
+                setShowAirQuality(false);
+                setSelectedAirQuality(null);
+                setShowContainers(true);
+            }
         }
         setAddingContainer(!addingContainer);
     };
