@@ -13,11 +13,13 @@ public static class DependencyInjection
         services.AddScoped<IServiceMigrationContainer, ServiceMigrationContainer>();
         services.AddScoped<IServiceContainers, ServiceContainers>();
         services.AddScoped<IServiceReviews, ServiceReviews>();
+        services.AddScoped<IServiceAirQuality, ServiceAirQuality>();
         services.AddScoped<IRepositoryContainers, RepositoryContainers>();
         services.AddScoped<IRepositoryContainerMigration, RepositoryContainerMigration>();
         services.AddScoped<IRepositoryReviews, RepositoryReviews>();
         services.AddScoped<IRepositoryHistoryReviews, RepositoryHistoryReviews>();
         services.AddScoped<IRepositoryGreenZones, RepositoryGreenZones>();
+        services.AddScoped<IRepositoryAirQuality, RepositoryAirQuality>();
         return services;
     }
 }

@@ -184,3 +184,63 @@
 .submit-button:hover:not(:disabled) {
     background-color: #1565C0;
 }
+
+/* Адаптивная верстка для сайдбара */
+@media screen and (max-width: 768px) {
+    .sidebar {
+        width: 100vw;
+        max-width: 100%;
+    }
+    
+    .sidebar__header {
+        padding: 16px;
+    }
+    
+    .sidebar__title {
+        font-size: 18px;
+    }
+    
+    .sidebar__content {
+        padding: 16px;
+    }
+    
+    .sidebar__section {
+        margin-bottom: 20px;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .form-actions button {
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .sidebar__header {
+        padding: 12px;
+    }
+    
+    .sidebar__title {
+        font-size: 16px;
+    }
+    
+    .sidebar__close {
+        font-size: 28px;
+        width: 28px;
+        height: 28px;
+    }
+    
+    .sidebar__content {
+        padding: 12px;
+    }
+    
+    .form-group input,
+    .form-group textarea,
+    .form-group select,
+    .form-field input,
+    .form-field select {
+        font-size: 16px;
+    }
+}

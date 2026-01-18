@@ -1,4 +1,5 @@
 import type {
+    AirQualityData,
     ContainerInfo,
     ContainerReview,
     CreateContainerRequest,
@@ -151,6 +152,51 @@ export async function getGreenZonesPointsAndAreaInAreaResponse(
         return await response.json();
     } catch (error) {
         logger.error('Ошибка при получении зеленых зон:', error);
+        return [];
+    }
+}
+
+export async function uploadAirQualityData(data: AirQualityData[]): Promise<void> {
+    logger.info('API: Загрузка данных о качестве воздуха', { count: data.length });
+    
+    try {
+        const response = await fetch(`${API_BASE_URL}/airquality/upload`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({ error: 'Неизвестная ошибка' }));
+            logger.error('API: Ошибка загрузки данных о качестве воздуха', { status: response.status, error: errorData });
+            throw new Error(errorData.error || `Ошибка HTTP: ${response.status}`);
+        }
+
+        logger.info('API: Данные о качестве воздуха успешно загружены');
+    } catch (error) {
+        logger.error('API: Ошибка при загрузке данных о качестве воздуха', error);
+        throw error;
+    }
+}
+
+export async function getAirQualityData(): Promise<AirQualityData[]> {
+    logger.info('API: Запрос данных о качестве воздуха');
+    
+    try {
+        const response = await fetch(`${API_BASE_URL}/airquality`);
+
+        if (!response.ok) {
+            logger.error('API: Ошибка получения данных о качестве воздуха', { status: response.status });
+            return [];
+        }
+
+        const data = await response.json();
+        logger.info('API: Получено записей о качестве воздуха', { count: data.length });
+        return data;
+    } catch (error) {
+        logger.error('API: Ошибка при запросе данных о качестве воздуха', error);
         return [];
     }
 }

@@ -65,8 +65,10 @@ export function MapView({
                             onSubmitContainer,
                             onCancelAddContainer
                         }: MapViewProps) {
+    const isSidebarOpen = !!(newContainerPosition || selectedAirQuality || selectedContainer);
+    
     return (
-        <>
+        <div className={`map-view ${isSidebarOpen ? 'sidebar-open' : ''}`}>
             <Sidebar
                 newContainerPosition={newContainerPosition}
                 selectedAirQuality={selectedAirQuality}
@@ -109,6 +111,6 @@ export function MapView({
                     onMoveEnd={onMoveEnd}
                 />
             </div>
-        </>
+        </div>
     );
 }

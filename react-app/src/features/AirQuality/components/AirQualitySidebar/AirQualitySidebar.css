@@ -129,3 +129,68 @@
     font-weight: 500;
     text-align: left;
 }
+
+/* Адаптивная верстка для сайдбара качества воздуха */
+@media screen and (max-width: 768px) {
+    .air-quality-sidebar {
+        width: 100vw;
+        max-width: 100%;
+    }
+    
+    .air-quality-sidebar__header {
+        padding: 16px;
+    }
+    
+    .air-quality-sidebar__title {
+        font-size: 18px;
+    }
+    
+    .air-quality-sidebar__content {
+        padding: 16px;
+    }
+    
+    .aqi-value {
+        font-size: 42px;
+    }
+    
+    .aqi-level {
+        font-size: 16px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .air-quality-sidebar__header {
+        padding: 12px;
+    }
+    
+    .air-quality-sidebar__title {
+        font-size: 16px;
+    }
+    
+    .air-quality-sidebar__close {
+        font-size: 28px;
+        width: 28px;
+        height: 28px;
+    }
+    
+    .air-quality-sidebar__content {
+        padding: 12px;
+    }
+    
+    .air-quality-sidebar__aqi {
+        padding: 18px;
+    }
+    
+    .aqi-value {
+        font-size: 36px;
+    }
+    
+    .aqi-level {
+        font-size: 15px;
+    }
+    
+    .pollutant-name,
+    .pollutant-value {
+        font-size: 13px;
+    }
+}

@@ -1,4 +1,5 @@
 using EcoMonitoringBack.ContractModels;
+using EcoMonitoringBack.Models.AirQuality;
 using EcoMonitoringBack.Models.Common;
 using EcoMonitoringBack.Models.Container;
 using EcoMonitoringBack.Models.GreenZones;
@@ -73,5 +74,21 @@ public static class ToContractMappings
         var latitude = point.Coordinates.Y;
         var longitude = point.Coordinates.X;
         return new EcoPoint(latitude, longitude);
+    }
+    
+    public static EcoAirQualityData ToEcoAirQualityData(this AirQualityData data)
+    {
+        return new EcoAirQualityData
+        {
+            Location = data.Location.ToEcoPoint(),
+            District = data.District,
+            Pm25 = data.Pm25,
+            Pm10 = data.Pm10,
+            So2 = data.So2,
+            No2 = data.No2,
+            Co = data.Co,
+            O3 = data.O3,
+            Aqi = data.Aqi
+        };
     }
 }
