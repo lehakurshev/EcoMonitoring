@@ -5,10 +5,6 @@ on:
     branches:
       - main
 
-env:
-  MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
-  VITE_ADMIN_PASSWORD_HASH: ${{ secrets.VITE_ADMIN_PASSWORD_HASH }}
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -26,30 +22,41 @@ jobs:
 
       - name: Deploy to server
         run: |
-          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << EOF
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
             set -e
 
-            echo "🧹 Удаление битого .env (если существует)"
-            mkdir -p ${{ secrets.DEPLOY_PATH }}
-            cd ${{ secrets.DEPLOY_PATH }}
-            rm -f .env
+            echo "🔍 Проверка Docker..."
 
-            echo "🔐 Экспорт секретов"
-            export MONGODB_PASSWORD='${{ secrets.MONGODB_PASSWORD }}'
-            export VITE_ADMIN_PASSWORD_HASH='${{ secrets.VITE_ADMIN_PASSWORD_HASH }}'
+            if ! command -v docker >/dev/null 2>&1; then
+              echo "❌ Docker не найден. Устанавливаем..."
+              curl -fsSL https://get.docker.com | sh
+              sudo usermod -aG docker $USER
+            fi
 
-            echo "📁 Переход в каталог деплоя"
+            if ! command -v docker-compose >/dev/null 2>&1; then
+              echo "❌ docker-compose не найден. Устанавливаем..."
+              sudo curl -L "https://github.com/docker/compose/releases/download/v2.25.0/docker-compose-linux-x86_64" \
+                -o /usr/local/bin/docker-compose
+              sudo chmod +x /usr/local/bin/docker-compose
+            fi
+
+            echo "✅ Docker и docker-compose установлены"
+
             mkdir -p ${{ secrets.DEPLOY_PATH }}
             cd ${{ secrets.DEPLOY_PATH }}
 
             if [ ! -d ".git" ]; then
+              echo "📥 Клонирование репозитория..."
               git clone https://github.com/${{ github.repository }} .
             else
+              echo "📦 Репозиторий существует — обновляем"
               git fetch origin
+              git checkout main
               git reset --hard origin/main
               git clean -fd
             fi
 
             chmod +x deploy.sh
             ./deploy.sh ${{ secrets.DEPLOY_PATH }}
+
           EOF
