@@ -28,15 +28,20 @@ jobs:
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << EOF
             set -e
-      
+
+            echo "🧹 Удаление битого .env (если существует)"
+            mkdir -p ${{ secrets.DEPLOY_PATH }}
+            cd ${{ secrets.DEPLOY_PATH }}
+            rm -f .env
+
             echo "🔐 Экспорт секретов"
             export MONGODB_PASSWORD='${{ secrets.MONGODB_PASSWORD }}'
             export VITE_ADMIN_PASSWORD_HASH='${{ secrets.VITE_ADMIN_PASSWORD_HASH }}'
-      
+
             echo "📁 Переход в каталог деплоя"
             mkdir -p ${{ secrets.DEPLOY_PATH }}
             cd ${{ secrets.DEPLOY_PATH }}
-      
+
             if [ ! -d ".git" ]; then
               git clone https://github.com/${{ github.repository }} .
             else
@@ -44,8 +49,7 @@ jobs:
               git reset --hard origin/main
               git clean -fd
             fi
-      
+
             chmod +x deploy.sh
             ./deploy.sh ${{ secrets.DEPLOY_PATH }}
           EOF
-      
