@@ -29,6 +29,13 @@ jobs:
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
             set -e
 
+            cd ${{ env.PROJECT_DIR }};
+
+            export MONGODB_PASSWORD='${{ secrets.MONGODB_PASSWORD }}'
+            export VITE_ADMIN_PASSWORD_HASH='${{ secrets.VITE_ADMIN_PASSWORD_HASH }}'
+
+            cd ..
+
             echo "🔍 Проверка Docker..."
 
             if ! command -v docker >/dev/null 2>&1; then
