@@ -5,6 +5,10 @@ on:
     branches:
       - main
 
+env:
+  MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
+  VITE_ADMIN_PASSWORD_HASH: ${{ secrets.VITE_ADMIN_PASSWORD_HASH }}
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -26,7 +30,21 @@ jobs:
             set -e
 
             echo "🔍 Проверка Docker..."
-            # ... (остальной код установки Docker и docker-compose остаётся без изменений)
+
+            if ! command -v docker >/dev/null 2>&1; then
+              echo "❌ Docker не найден. Устанавливаем..."
+              curl -fsSL https://get.docker.com | sh
+              sudo usermod -aG docker $USER
+            fi
+
+            if ! command -v docker-compose >/dev/null 2>&1; then
+              echo "❌ docker-compose не найден. Устанавливаем..."
+              sudo curl -L "https://github.com/docker/compose/releases/download/v2.25.0/docker-compose-linux-x86_64" \
+                -o /usr/local/bin/docker-compose
+              sudo chmod +x /usr/local/bin/docker-compose
+            fi
+
+            echo "✅ Docker и docker-compose установлены"
 
             mkdir -p ${{ secrets.DEPLOY_PATH }}
             cd ${{ secrets.DEPLOY_PATH }}
@@ -41,12 +59,6 @@ jobs:
               git reset --hard origin/main
               git clean -fd
             fi
-
-            echo "Создание .env файла..."
-            cat > .env << EOL
-            MONGODB_PASSWORD=${{ secrets.MONGODB_PASSWORD }}
-            VITE_ADMIN_PASSWORD_HASH=${{ secrets.VITE_ADMIN_PASSWORD_HASH }}
-            EOL
 
             chmod +x deploy.sh
             ./deploy.sh ${{ secrets.DEPLOY_PATH }}

@@ -6,6 +6,9 @@ PROJECT_DIR="$1"
 echo "🚀 Начало деплоя..."
 cd "$PROJECT_DIR"
 
+export MONGODB_PASSWORD='${{ secrets.MONGODB_PASSWORD }}'
+export VITE_ADMIN_PASSWORD_HASH='${{ secrets.VITE_ADMIN_PASSWORD_HASH }}'
+
 echo "📦 Обновление репозитория..."
 git fetch origin
 git reset --hard origin/main
