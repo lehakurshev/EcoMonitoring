@@ -5,6 +5,10 @@ on:
     branches:
       - main
 
+env:
+  MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
+  VITE_ADMIN_PASSWORD_HASH: ${{ secrets.VITE_ADMIN_PASSWORD_HASH }}
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -24,6 +28,9 @@ jobs:
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
             set -e
+
+            export MONGODB_PASSWORD='${{ secrets.MONGODB_PASSWORD }}'
+            export VITE_ADMIN_PASSWORD_HASH='${{ secrets.VITE_ADMIN_PASSWORD_HASH }}'
 
             echo "🔍 Проверка Docker..."
 
